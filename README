@@ -1,0 +1,164 @@
+原始版本clone自：
+https://gitlab.freedesktop.org/gstreamer/cerbero branch: origin/1.19.2
+last commit: 316f1b65baddcc6578cb1422c2fa00de72e8618f(Sat Feb 22 04:02:15 2020 +0530)
+
+
+代码包与NDK下载位置
+/home/username/.cache/cerbero-sources
+
+--------------------
+
+
+[编译手顺]
+1.
+>>fatal: LF would be replaced by CRLF
+git config --global core.autocrlf false   --> 防止cerbero调用git时fatal
+或者 
+.gitconfig
+[core]
+    autocrlf = false
+    safecrlf = false
+
+2. 编译工具包
+./cerbero-uninstalled -c config/cross-android-arm64.cbc bootstrap
+ 
+3. 根据Morley的项目需要，要组入以下lib: 
+./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone ffmpeg
+./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone libiconv
+./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone libffi
+./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone zlib
+./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone proxy-libintl
+./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone glib
+./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone jrtplib
+
+NOTE: ffmpeg按项目要求最小化裁剪，会导致gstreamer缺少依赖的包libavfilter等，编译失败
+
+
+==================================
+
+去除强制https
+/cerbero/cerbero/build/source.py
+
+        #if o.scheme in ('http', 'ftp'):
+        #    raise FatalError('Download URL {!r} must use HTTPS'.format(self.url))
+
+==================================
+
+
+------------------------------------------------------------------------------
+[修改NDK版本]
+/home/username/BSP/cerbero/cerbero/bootstrap/android.py
+
+NDK_VERSION = 'r18b'
+NDK_BASE_URL = 'https://dl.google.com/android/repository/android-ndk-%s-%s-%s.zip'
+NDK_CHECKSUMS = {
+    'android-ndk-r18b-linux-x86_64.zip': '4f61cbe4bbf6406aa5ef2ae871def78010eed6271af72de83f8bd0b07a9fd3fd',
+    'android-ndk-r18b-darwin-x86_64.zip': 'dd6524c3cc91725b5c39370f6deb27d8eee056e2bb2efef0a8008b4ca6d83891',
+    'android-ndk-r18b-windows-x86_64.zip': '601b10d8c48486338530d55785ecb87f24ee4a98adad2ee8352f72552d434362',
+    'android-ndk-r18b-windows-x86.zip': '205776bf1b1b8e6b624e301063b57d49fa93e3c6da0404fdf38d5795f29c4f2d',
+}
+
+/home/username/BSP/cerbero/config/android.config
+  toolchain_prefix = os.path.join(home_dir, 'android-ndk-18')
+
+
+[修改安卓版本]
+/home/username/BSP/cerbero/config/cross-android-arm64.cbc
+  target_distro_version = DistroVersion.ANDROID_LOLLIPOP
+
+/home/username/BSP/cerbero/config/cross-android-armv7.cbc
+  target_distro_version = DistroVersion.ANDROID_LOLLIPOP
+
+[修改gstreamer版本]
+/home/username/BSP/cerbero_r18/recipes/custom.py
+   version = '1.16.1'
+
+/home/username/BSP/cerbero_r18/packages/custom.py
+   version = '1.16.1'
+
+------------------------------
+[安卓版本参考]
+/home/username/BSP/cerbero/cerbero/enums.py
+    ANDROID_GINGERBREAD = 'android_09_gingerbread'  # API Level 9
+    ANDROID_ICE_CREAM_SANDWICH = 'android_14_ice_cream_sandwich'  # API Level 14
+    ANDROID_JELLY_BEAN = 'android_16_jelly_bean'  # API Level 16
+    ANDROID_KITKAT = 'android_19_kitkat'  # API Level 19
+    ANDROID_LOLLIPOP = 'android_21_lollipop' # API Level 21
+    ANDROID_LOLLIPOP_MR1 = 'android_22_lollipop_mr1' # API Level 22
+    ANDROID_MARSHMALLOW = 'android_23_marshmallow' # API Level 23
+    ANDROID_NOUGAT = 'android_24_nougat' # API Level 24
+    ANDROID_NOUGAT_MR1 = 'android_25_nougat_mr1' # API Level 25
+    ANDROID_OREO = 'android_26_oreo' # API Level 26
+    ANDROID_OREO_MR1 = 'android_27_oreo_mr1' # API Level 27
+    ANDROID_PIE = 'android_28_pie' # API Level 28
+    ANDROID_Q = 'android_29_q' # API Level 29
+    ANDROID_R = 'android_29_q' # API Level 30
+
+
+
+
+Android 11.0 (R)	30
+Android 10.0 (Q)	29
+Android 9.0 (Pie)	28
+Android 8.1 (Oreo)	27
+Android 8.0 (Oreo)	26
+Android 7.1.1 (Nougat)	25
+Android 7.0 (Nougat)	24
+Android 6.0 (Marshmallow)	23
+Android 5.1 (Lollipop)	22
+Android 5.0 (Lollipop)	21
+Android 4.4W (KitKat Wear)	20
+Android 4.4 (KitKat)	19
+Android 4.3 (Jelly Bean)	18
+Android 4.2 (Jelly Bean)	17
+Android 4.1 (Jelly Bean)	16
+Android 4.0.3 (IceCreamSandwich)	15
+Android 4.0 (IceCreamSandwich)	14
+Android 3.2 (Honeycomb)	13
+Android 3.1 (Honeycomb)	12
+Android 3.0 (Honeycomb)	11
+Android 2.3.3 (Gingerbread)	10
+Android 2.3 (Gingerbread)	9
+Android 2.2 (Froyo)	8
+Android 2.1 (Eclair)	7
+Android 2.0.1 (Eclair)	6
+Android 2.0 (Eclair)	5
+Android 1.6 (Dout)	4
+Android 1.5 (Cupcake)	3
+Android 1.1 (Base)	2
+Android 1.0 (Base)	1
+
+
+
+
+
+
+
+
+
+
+
+
+==================================
+
+#python最好维持在ubuntu原始版本3.5!!!!!!!, 
+#已经升级的可以下个3.5的包,编译后安装.
+sudo pip3 install meson
+sudo pip3 install ninja
+
+
+------------------------------------------------------------------------------
+升级ubuntu的 zlib 到 1.2.11
+下面的libpng与zlib版本不一致,就不会保存.   libpng check的是ubuntu的zlib版本....
+
+//最新master cerbero, 手动改下
+///home/username/BSP/cerbero/build/sources/android_arm64/libpng-1.6.37
+//  pnglibconf.h
+//  pnglibconf.out
+//     #define PNG_ZLIB_VERNUM 0x12b0
+//
+//PKG_CONFIG_LIBDIR=/home/username/BSP/cerbero/build/dist/android_arm64/lib/pkgconfig
+//./configure --host aarch64-none-linux-android --prefix=/home/username/BSP/cerbero/build/dist/android_arm64 --libdir=/home/username/BSP/cerbero/build/dist/android_arm64/lib
+//make
+//make install
+
