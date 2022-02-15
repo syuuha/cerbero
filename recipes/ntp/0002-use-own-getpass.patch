@@ -1,0 +1,37 @@
+From 9ce14025ac175ae52000f140f4c6f9d4ff0b1e6c Mon Sep 17 00:00:00 2001
+From: zhoubo <zhoubo@iauto.com>
+Date: Tue, 25 May 2021 21:37:43 +0800
+Subject: [PATCH] use own getpass()
+
+---
+ libntp/machines.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/libntp/machines.c b/libntp/machines.c
+index 7a29ac0..f3ce9bb 100644
+--- a/libntp/machines.c
++++ b/libntp/machines.c
+@@ -508,7 +508,10 @@ ntp_set_tod(
+ 
+ #endif /* not SYS_WINNT */
+ 
+-#if defined (SYS_WINNT) || defined (SYS_VXWORKS) || defined(MPE)
++//#if defined (SYS_WINNT) || defined (SYS_VXWORKS) || defined(MPE)
++// 1.android do not have getpass, so use this own getpass().
++// 2.use getchar()
++#if 1
+ /* getpass is used in ntpq.c and ntpdc.c */
+ 
+ char *
+@@ -520,7 +523,7 @@ getpass(const char * prompt)
+ 	fprintf(stderr, "%s", prompt);
+ 	fflush(stderr);
+ 
+-	for (i=0; i<sizeof(password)-1 && ((c=_getch())!='\n' && c!='\r'); i++) {
++	for (i=0; i<sizeof(password)-1 && ((c=getchar())!='\n' && c!='\r'); i++) {
+ 		password[i] = (char) c;
+ 	}
+ 	password[i] = '\0';
+-- 
+2.27.0.221.ga08a83db2b
+

@@ -1,0 +1,25 @@
+From 4937138416a451d17bd0229460eb2c1901bc762c Mon Sep 17 00:00:00 2001
+From: lvting <lvting@iauto.com>
+Date: Sat, 20 Jul 2019 05:37:43 +0000
+Subject: [PATCH] disable bigendian for rtpheader
+
+---
+ src/rtpconfig.h.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/rtpconfig.h.in b/src/rtpconfig.h.in
+index 793ad88..d840e7d 100644
+--- a/src/rtpconfig.h.in
++++ b/src/rtpconfig.h.in
+@@ -53,7 +53,7 @@ ${RTP_HAVE_SYS_FILIO}
+ 
+ ${RTP_HAVE_SYS_SOCKIO}
+ 
+-${RTP_ENDIAN}
++// ${RTP_ENDIAN}
+ 
+ ${RTP_SOCKLENTYPE_UINT}
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,28 @@
+From 19c55b4e7cf9a5624c2f6f8dcade822a90f9f10e Mon Sep 17 00:00:00 2001
+From: zhoubo <zhoubo@iauto.com>
+Date: Mon, 24 May 2021 20:33:04 +0800
+Subject: [PATCH] add adjtime() for cerbero compile
+
+---
+ libntp/adjtime.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/libntp/adjtime.c b/libntp/adjtime.c
+index b536cc5..b14d45a 100644
+--- a/libntp/adjtime.c
++++ b/libntp/adjtime.c
+@@ -382,5 +382,11 @@ adjtime (struct timeval *delta, struct timeval *olddelta)
+ }
+ # else /* no special adjtime() needed */
+ int adjtime_bs;
++
++// just for cerbero compile
++int adjtime(struct timeval *delta, struct timeval *olddelta)
++{
++	return 0;
++}
+ # endif
+ #endif
+-- 
+2.27.0.221.ga08a83db2b
+

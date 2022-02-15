@@ -1,0 +1,86 @@
+From fbe88982ad9b7da78ca70849c430a14a973cd802 Mon Sep 17 00:00:00 2001
+From: lvting <lvting@iauto.com>
+Date: Wed, 10 Jul 2019 10:42:52 +0000
+Subject: [PATCH] without jthread support
+
+---
+ src/rtpconfig.h.in       |  2 +-
+ src/rtpsecuresession.cpp | 14 +++++++++-----
+ 2 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/src/rtpconfig.h.in b/src/rtpconfig.h.in
+index cbf23a8..b8a2c6b 100644
+--- a/src/rtpconfig.h.in
++++ b/src/rtpconfig.h.in
+@@ -61,7 +61,7 @@ ${RTP_HAVE_SOCKADDR_LEN}
+ 
+ ${RTP_SUPPORT_IPV4MULTICAST}
+ 
+-${RTP_SUPPORT_THREAD}
++// ${RTP_SUPPORT_THREAD}
+ 
+ ${RTP_SUPPORT_SDESPRIV}
+ 
+diff --git a/src/rtpsecuresession.cpp b/src/rtpsecuresession.cpp
+index 377a7bc..dd350ab 100644
+--- a/src/rtpsecuresession.cpp
++++ b/src/rtpsecuresession.cpp
+@@ -7,7 +7,7 @@
+ 
+   This library was developed at the Expertise Centre for Digital Media
+   (http://www.edm.uhasselt.be), a research center of the Hasselt University
+-  (http://www.uhasselt.be). The library is based upon work done for 
++  (http://www.uhasselt.be). The library is based upon work done for
+   my thesis at the School for Knowledge Technology (Belgium/The Netherlands).
+ 
+   Permission is hereby granted, free of charge, to any person obtaining a
+@@ -35,13 +35,17 @@
+ #ifdef RTP_SUPPORT_SRTP
+ 
+ #include "rtprawpacket.h"
++#ifdef RTP_SUPPORT_THREAD
+ #include <jthread/jmutexautolock.h>
++#endif // RTP_SUPPORT_THREAD
+ #include <srtp/srtp.h>
+ #include <iostream>
+ #include <vector>
+ 
+ using namespace std;
++#ifdef RTP_SUPPORT_THREAD
+ using namespace jthread;
++#endif // RTP_SUPPORT_THREAD
+ 
+ namespace jrtplib
+ {
+@@ -97,7 +101,7 @@ int RTPSecureSession::GetLastLibSRTPError()
+ 
+ 	int err = m_lastSRTPError;
+ 	m_lastSRTPError = 0; // clear it
+-	
++
+ 	return err;
+ }
+ 
+@@ -165,8 +169,8 @@ int RTPSecureSession::encryptData(uint8_t *pData, int &dataLength, bool rtp)
+ 			m_lastSRTPError = (int)result;
+ 			return ERR_RTP_SECURESESSION_CANTENCRYPTRTCPDATA;
+ 		}
+-	}	
+-	
++	}
++
+ 	dataLength = length;
+ 
+ 	return 0;
+@@ -264,7 +268,7 @@ bool RTPSecureSession::OnChangeIncomingData(RTPRawPacket *rawpack)
+ 		OnErrorChangeIncomingData(status, srtpErr);
+ 		return false;
+ 	}
+-	
++
+ 	return true;
+ }
+ 
+-- 
+2.7.4
+

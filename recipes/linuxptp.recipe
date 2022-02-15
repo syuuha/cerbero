@@ -1,0 +1,65 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+#from cerbero.build.build import modify_environment
+#from cerbero.tools.libtool import LibtoolLibrary
+#from cerbero.utils import shell, messages
+
+import os
+import shutil
+
+#################################################################################################
+# The functions in spawn.h are only available on Android P and later (API level 28, ANDROID_PIE)
+#################################################################################################
+#1. /home/yangshusen/BSP/cerbero/config/cross-android-arm64.cbc
+#   target_distro_version = DistroVersion.ANDROID_PIE
+#
+#2. add linuxptp.recipe for cerbero
+#
+#3. download linuxptp-3.1.tgz from url = 'sf://.tgz'
+#
+#4. fix makefile 
+#   remove -lrt and ...
+#
+#5. fix missing.h
+#   remove IFLA_BOND_MAX and ...
+#
+#6. create patch
+
+class Recipe(recipe.Recipe):
+    name = 'linuxptp'
+    version = '3.1'
+    licenses = [License.GPLv2Plus]
+    btype = BuildType.MAKEFILE
+    stype = SourceType.TARBALL
+    url = 'sf://.tgz'
+    tarball_checksum = 'f58f5b11cf14dc7c4f7c9efdfb27190e43d02cf20c3525f6639edac10528ce7d'
+    patches = [name + '/0001-fix-for-cerbero-build.patch']
+
+    def prepare(self):
+        if self.config.target_platform != Platform.LINUX and self.config.target_platform != Platform.ANDROID:
+            raise InvalidRecipeError(self, "Invalid platform")
+
+        if self.config.target_platform in [Platform.ANDROID]:
+            if self.config.target_arch == Architecture.ARM64:
+                # manual set all for makefile
+                cflags = self.get_env('CFLAGS')
+                ldflags = self.get_env('LDFLAGS')
+                ranlib = self.get_env('RANLIB')
+                ar = self.get_env('AR')
+                cc = self.get_env('CC') + ' ' + self.get_env('CFLAGS')
+                ld = self.get_env('LD') + ' ' + self.get_env('LDFLAGS')
+                self.make += ['AR=' + ar, 'RANLIB=' + ranlib, 'CC=' + cc, 'LD=' + ld, 'CFLAG=' + cflags, 'LDFLAG=' + ldflags]
+
+
+# set (API level 28, ANDROID_PIE), not need anymore
+#               self.make += ['CROSS_COMPILE=' + 'aarch64-linux-android-', 'CROSS_SYSROOT=' + self.config.sysroot]
+#               self.append_env('CFLAGS', '--sysroot=' + self.config.sysroot)
+#               self.append_env('CFLAGS', '-D__ANDROID_API__=28')
+#               self.append_env('CFLAGS', '-nostdlib++')
+#               self.append_env('CXXFLAGS', '-D__ANDROID_API__=28')
+#               self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/platforms/android-21/arch-arm64/usr/lib/')
+#               self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/')
+#               self.append_env('LDFLAGS', '-lc++_shared')
+#              self.append_env('LDFLAGS', '--sysroot=' + self.config.sysroot)
+#              self.append_env('LDFLAGS', '-D__ANDROID_API__=28')
+
+

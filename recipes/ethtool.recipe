@@ -1,0 +1,29 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+
+import os
+import shutil
+
+class Recipe(recipe.Recipe):
+    name = 'ethtool'
+    version = '5.9'
+    btype = BuildType.AUTOTOOLS
+    stype = SourceType.TARBALL
+
+## ethtool do not need libmnl on v5.4
+#    url = 'https://mirrors.edge.kernel.org/pub/software/network/ethtool/ethtool-5.4.tar.gz'
+#    tarball_checksum = '0b25a46b61bc6e26f56dcb973fc28acea159e2c32c9d6da42c0fa8d1a6339829'
+
+## ethtool need libmnl from v5.6
+    url = 'https://mirrors.edge.kernel.org/pub/software/network/ethtool/ethtool-5.9.tar.gz'
+    tarball_checksum = 'f934a830554c46d7d60b1a9147f4cab15589b7e09344c4b79b1948b740f0a725'
+
+    licenses = [License.GPLv2Plus]
+    deps = ['libmnl']
+
+    def prepare(self):
+        if self.config.target_platform != Platform.LINUX and self.config.target_platform != Platform.ANDROID:
+            raise InvalidRecipeError(self, "Invalid platform")
+
+    def post_install(self):
+        if self.config.target_platform == Platform.ANDROID:
+            super().post_install()

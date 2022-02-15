@@ -1,0 +1,36 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+
+from cerbero.tools.libtool import LibtoolLibrary
+
+class Recipe(recipe.Recipe):
+    name = 'libavb'
+    version = '0.0.1'
+    stype = SourceType.GIT
+    btype = BuildType.CMAKE
+    remotes = {'origin': 'https://gitlab.office.iauto.com/zhoubo/test.git'}
+    commit = 'origin/master'
+    licenses = [License.LGPLv2Plus]
+#    configure_options = ' -DUSE_SHARELIBPCAP:bool=off '
+    deps = ['libpcap', 'glib']
+    files_libs = ['mediaopenavb', 'mediaavbstack']
+    files_devel = ['include/avb_gptp.h'] #, 'lib/pkgconfig/avbstack.pc']
+
+#    def prepare(self):
+#        if self.config.target_platform != Platform.LINUX or self.config.cross_compiling():
+#            self.deps.append('openssl')
+#        if self.config.target_platform == Platform.ANDROID:
+#            self.append_env('CXXFLAGS', '-frtti', '-fexceptions')
+#            self.configure_options += ' -DUSE_GNUSTL=ON'
+#            self.deps.append('gnustl')
+
+    def post_install(self):
+        libtool_la = LibtoolLibrary('libmediaopenavb', 0, 0, 1, self.config.libdir,
+                self.config.target_platform, deps=['libpcap'])
+        libtool_la.save()
+        super().post_install()
+
+        libtool_la = LibtoolLibrary('libmediaavbstack', 0, 0, 1, self.config.libdir,
+                self.config.target_platform, deps=['glib-2.0', 'mediaopenavb'])
+        libtool_la.save()
+        super().post_install()
+

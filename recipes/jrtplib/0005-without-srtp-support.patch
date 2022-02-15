@@ -1,0 +1,25 @@
+From 73eedf06b057ed266b8c2d9beb16ad6efef05a2c Mon Sep 17 00:00:00 2001
+From: lvting <lvting@iauto.com>
+Date: Thu, 11 Jul 2019 05:33:16 +0000
+Subject: [PATCH] without srtp support
+
+---
+ src/rtpconfig.h.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/rtpconfig.h.in b/src/rtpconfig.h.in
+index b8a2c6b..b6512a0 100644
+--- a/src/rtpconfig.h.in
++++ b/src/rtpconfig.h.in
+@@ -97,7 +97,7 @@ ${RTP_HAVE_RAND_S}
+ 
+ ${RTP_HAVE_STRNCPY_S}
+ 
+-${RTP_SUPPORT_SRTP}
++// ${RTP_SUPPORT_SRTP}
+ 
+ ${RTP_HAVE_CLOCK_GETTIME}
+ 
+-- 
+2.7.4
+

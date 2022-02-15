@@ -1,0 +1,115 @@
+From e5506892d020882592722a6a236c506b4b8531fa Mon Sep 17 00:00:00 2001
+From: sunxianbin <sunxianbin@iauto.com>
+Date: Mon, 8 Jun 2020 11:31:47 +0800
+Subject: [PATCH] add interface name for rtpudpv4transmitter
+
+---
+ src/rtperrors.cpp           |  1 +
+ src/rtperrors.h             |  1 +
+ src/rtpudpv4transmitter.cpp | 12 ++++++++++++
+ src/rtpudpv4transmitter.h   |  8 ++++++++
+ 4 files changed, 22 insertions(+)
+ mode change 100644 => 100755 src/rtpudpv4transmitter.cpp
+ mode change 100644 => 100755 src/rtpudpv4transmitter.h
+
+diff --git a/src/rtperrors.cpp b/src/rtperrors.cpp
+index e9c1945..b862f80 100644
+--- a/src/rtperrors.cpp
++++ b/src/rtperrors.cpp
+@@ -245,6 +245,7 @@ static RTPErrorInfo ErrorDescriptions[]=
+ 	{ ERR_RTP_TCPTRANS_SOCKETNOTFOUNDINDESTINATIONS, "The specified destination address (socket) was not found in the list of destinations of the TCP transmitter" },
+ 	{ ERR_RTP_TCPTRANS_ERRORINSEND, "An error occurred in the TCP transmitter while sending a packet" },
+ 	{ ERR_RTP_TCPTRANS_ERRORINRECV, "An error occurred in the TCP transmitter while receiving a packet" },
++	{ ERR_RTP_UDPV4TRANS_BINDTOINTERFACEFAILED, "Bind the socket to the interface failed"},
+ 	{ 0,0 }
+ };
+ 
+diff --git a/src/rtperrors.h b/src/rtperrors.h
+index de9832c..21681f6 100644
+--- a/src/rtperrors.h
++++ b/src/rtperrors.h
+@@ -246,6 +246,7 @@ std::string JRTPLIB_IMPORTEXPORT RTPGetErrorString(int errcode);
+ #define ERR_RTP_TCPTRANS_SOCKETNOTFOUNDINDESTINATIONS             -195
+ #define ERR_RTP_TCPTRANS_ERRORINSEND                              -196
+ #define ERR_RTP_TCPTRANS_ERRORINRECV                              -197
++#define ERR_RTP_UDPV4TRANS_BINDTOINTERFACEFAILED                  -198
+ 
+ #endif // RTPERRORS_H
+ 
+diff --git a/src/rtpudpv4transmitter.cpp b/src/rtpudpv4transmitter.cpp
+old mode 100644
+new mode 100755
+index f34d973..68bfb5b
+--- a/src/rtpudpv4transmitter.cpp
++++ b/src/rtpudpv4transmitter.cpp
+@@ -452,6 +452,18 @@ int RTPUDPv4Transmitter::Create(size_t maximumpacketsize,const RTPTransmissionPa
+ 			return ERR_RTP_UDPV4TRANS_CANTSETRTPTRANSMITBUF;
+ 		}
+ 
++		// bind socket to interface
++		std::string ifName = params->GetIFName();
++		if (!ifName.empty())
++		{
++			if (setsockopt(rtpsock, SOL_SOCKET, SO_BINDTODEVICE, ifName.c_str(), ifName.length()) != 0)
++			{
++				CLOSESOCKETS;
++				MAINMUTEX_UNLOCK
++				return ERR_RTP_UDPV4TRANS_BINDTOINTERFACEFAILED;
++			}
++		}
++
+ 		if (rtpsock != rtcpsock) // no need to set RTCP flags when multiplexing
+ 		{
+ 			size = params->GetRTCPReceiveBuffer();
+diff --git a/src/rtpudpv4transmitter.h b/src/rtpudpv4transmitter.h
+old mode 100644
+new mode 100755
+index 4a4542c..dda5353
+--- a/src/rtpudpv4transmitter.h
++++ b/src/rtpudpv4transmitter.h
+@@ -46,6 +46,7 @@
+ #include "rtpsocketutil.h"
+ #include "rtpabortdescriptors.h"
+ #include <list>
++#include <string>
+ 
+ #ifdef RTP_SUPPORT_THREAD
+ 	#include <jthread/jmutex.h>
+@@ -128,6 +129,8 @@ public:
+ 	 *  the RTP port (set this to zero to disable). */
+ 	void SetForcedRTCPPort(uint16_t rtcpport)					{ forcedrtcpport = rtcpport; }
+ 
++	void SetIFName(const std::string& name)						{ ifName = name;}
++
+ 	/** Use sockets that have already been created, no checks on port numbers
+ 	 *  will be done, and no buffer sizes will be set; you'll need to close
+ 	 *  the sockets yourself when done, it will **not** be done automatically. */
+@@ -159,6 +162,9 @@ public:
+ 	/** If non-zero, the specified port will be used to receive RTCP traffic. */
+ 	uint16_t GetForcedRTCPPort() const							{ return forcedrtcpport; }
+ 
++	/** Return the interface device's name, if not bind before, return empty string **/
++	std::string GetIFName() const								{ return ifName; }
++
+ 	/** Returns true and fills in sockets if existing sockets were set
+ 	 *  using RTPUDPv4TransmissionParams::SetUseExistingSockets. */
+ 	bool GetUseExistingSockets(SocketType &rtpsocket, SocketType &rtcpsocket) const { if (!useexistingsockets) return false; rtpsocket = rtpsock; rtcpsocket = rtcpsock; return true; }
+@@ -177,6 +183,7 @@ private:
+ 	bool rtcpmux;
+ 	bool allowoddportbase;
+ 	uint16_t forcedrtcpport;
++	std::string ifName;
+ 
+ 	SocketType rtpsock, rtcpsock;
+ 	bool useexistingsockets;
+@@ -197,6 +204,7 @@ inline RTPUDPv4TransmissionParams::RTPUDPv4TransmissionParams() : RTPTransmissio
+ 	rtcpmux = false;
+ 	allowoddportbase = false;
+ 	forcedrtcpport = 0;
++	ifName = "";
+ 	useexistingsockets = false;
+ 	rtpsock = 0;
+ 	rtcpsock = 0;
+-- 
+2.17.1
+

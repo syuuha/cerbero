@@ -1,0 +1,77 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+import shutil
+from cerbero.tools.libtool import LibtoolLibrary
+
+class Recipe(recipe.Recipe):
+    name = 'live555'
+    version = '2021.05.22'
+    licenses = [License.LGPLv2Plus]
+    btype = BuildType.MAKEFILE
+    stype = SourceType.TARBALL
+    ## remove /cerbero/cerbero/build/source.py if o.scheme in ('http', 'ftp')
+    #url = 'http://www.live555.com/liveMedia/public/live.%(version)s.tar.gz'
+    url = 'http://download.videolan.org/pub/contrib/live555/live.%(version)s.tar.gz'
+    tarball_dirname = 'live'   # tar.gz extract to 'live' 
+    tarball_checksum = 'b7eae32bfc03275c5fb6d4a95c2161598ddac07c1ca2a95efa72039246e66992'
+
+    ## cd live(live555-latest.tar.gz)
+    ## copy from config.linux-with-shared-libraries to config.linux-with-shared-libraries-no-openssl
+    ## add "-DNO_OPENSSL=1", remove "-lssl -lcrypto", in config.linux-with-shared-libraries-no-openssl
+    ## ./genMakefiles linux-with-shared-libraries-no-openssl
+    ## git init
+    ## git add .
+    ## git commit -m "add makefile(linux-with-shared-libraries-no-openssl)"
+    ## git format-patch COMMITID  --> *.patch
+    ## fix "PREFIX = /usr/local" to "PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64"
+    patches = [name + '/0001-add-makefile-config.linux-with-shared-libraries-no-o.patch']
+
+
+    ##  https, but not latest
+    #name = 'live555'
+    #version = '2019.05.29'
+    #licenses = [License.LGPLv2Plus]
+    #btype = BuildType.MAKEFILE
+    #stype = SourceType.GIT
+    #remotes = {'origin': 'https://github.com/rgaufman/live555.git'}
+    #commit = 'origin/master'
+    #patches = [name + '/0003-add-makefile-linux-shared-lib-for-cerbero.patch']
+
+
+    def prepare(self):
+        if self.config.target_platform in [Platform.ANDROID]:
+            if self.config.target_arch == Architecture.ARM64:
+                #self.append_env('CFLAGS', ' -fexceptions ')
+                ## remove /config/android.config : -fno-exceptions
+                ## use NO_GETIFADDRS : GroupsockHelper.cpp:903: undeclared identifier 'getifaddrs' 'freeifaddrs'
+                self.append_env('CXXFLAGS', ' -fexceptions -DNO_GETIFADDRS ')
+                ## reset LDFLAGS to remove /config/android.config: -Wl,-no-undefined
+                ## add -Wl,--strip-debug -fvisibility=hidden -fuse-ld=lld to fix "warning : bss_start"
+                self.set_env('LDFLAGS', '-gcc-toolchain ' + self.config.toolchain_prefix + '/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64')
+                self.append_env('LDFLAGS', '-fPIC -no-canonical-prefixes -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--gc-sections -Wl,--warn-shared-textrel -Wl,--exclude-libs,libatomic.a -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libunwind.a -Wl,--strip-debug -fvisibility=hidden -fuse-ld=lld')
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/')
+                ## ANDROID_PIE = 'android_28_pie' # API Level 28
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/28')
+                self.append_env('LDFLAGS', '-lc++_shared')
+
+    #async def install(self):
+    #        include_path = os.path.join(self.config.prefix, 'liveMedia', 'include')
+    #        if not os.path.exists(include_path):
+    #            os.makedirs(include_path)
+    #        liveMedia_header = os.path.join(self.build_dir, 'liveMedia', 'include')
+    #        shutil.copy_dir(liveMedia_header, include_path)
+    #
+    #        library_path = os.path.join(self.config.prefix, 'lib')
+    #        liveMedia_lib = os.path.join(self.build_dir, 'liveMedia', 'libliveMedia.so.94.0.2')
+    #        shutil.copy(liveMedia_lib, library_path)
+
+
+    def post_install(self):
+        LibtoolLibrary('liveMedia', 94, 0, 2,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('groupsock', 30, 0, 4,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('UsageEnvironment', 3, 1, 0,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('BasicUsageEnvironment', 1, 0, 1,
+                       self.config.libdir, self.config.target_platform).save()
+        super().post_install()

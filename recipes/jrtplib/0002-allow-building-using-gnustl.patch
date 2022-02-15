@@ -1,0 +1,39 @@
+From 4b1b9edee7d80507d75a20656295047b692874dd Mon Sep 17 00:00:00 2001
+From: lvting <lvting@iauto.com>
+Date: Wed, 10 Jul 2019 08:06:04 +0000
+Subject: [PATCH] allow-building-using-gnustl
+
+---
+ CMakeLists.txt | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ca90cd2..5f689c6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -40,6 +40,8 @@ set(JRTPLIB_LINK_LIBS "")
+ set(JRTPLIB_INTERNAL_INCLUDES "")
+ set(JRTPLIB_EXTERNAL_INCLUDES "")
+ 
++include_directories("/home/yangshusen/BSP/cerbero/build/android-ndk-21/sysroot/usr/include/")
++
+ add_additional_stuff(JRTPLIB_EXTERNAL_INCLUDES JRTPLIB_LINK_LIBS)
+ 
+ jrtplib_support_option("Support SDES PRIV items" JRTPLIB_SUPPORT_SDESPRIV RTP_SUPPORT_SDESPRIV ON "// No support for SDES PRIV items")
+@@ -105,6 +107,13 @@ else (CMAKE_CROSSCOMPILING)
+ endif (CMAKE_CROSSCOMPILING)
+ 
+ option(JRTPLIB_COMPILE_TESTS "Compile various tests in the 'tests' subdirectory" NO)
++option(USE_GNUSTL "Get c++ library/headers from the gnustl.pc" OFF)
++
++if ( USE_GNUSTL )
++    pkg_check_modules (GNUSTL REQUIRED gnustl)
++    link_directories(${GNUSTL_LIBRARY_DIRS})
++    include_directories(${GNUSTL_INCLUDE_DIRS})
++endif()
+ 
+ # Check winsock first
+ set(TESTDEFS "")
+-- 
+2.7.4
+

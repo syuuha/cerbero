@@ -1,0 +1,48 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+
+class Recipe(recipe.Recipe):
+
+    name = 'jrtplib'
+    version = '3.11.2'
+    licenses = [{License.MIT: ['LICENSE.MIT']}]
+    btype = BuildType.CMAKE
+    stype = SourceType.GIT
+    #stype = SourceType.TARBALL
+    remotes = {'origin': 'https://github.com/j0r1/JRTPLIB.git'}
+    commit = 'origin/master'
+    #url = 'https://github.com/j0r1/JRTPLIB/archive/refs/tags/v3.11.2.tar.gz'
+    #tarball_checksum = '591bf6cddd0976a4659ed4dd2fada43140e5f5f9c9dbef56b137a3023549673f'
+    #tarball_dirname = 'JRTPLIB-3.11.2'
+    configure_options = '-DSRTP_ENABLED=FALSE -DANDROID_STL=c++_shared'
+    platform_deps = {Platform.ANDROID: ['gnustl']}
+    patches = [name + '/0008-disable-bigendian-for-rtpheader.patch',
+                name + '/0010-yds-add-log-to-debug-sendto-problem.patch']
+    files_libs = ['libjrtplib']
+
+# name + '/0001-disable-memory-management.patch',
+# name + '/0006-without-ipv6-support.patch',
+
+#               name + '/0002-allow-building-using-gnustl.patch',
+#               name + '/0003-delete-using-namespace-std.patch',
+#               name + '/0004-without-jthread-support.patch',
+#               name + '/0005-without-srtp-support.patch',
+#               name + '/0007-use-libc.patch',
+
+    def prepare(self):
+        if self.config.target_platform in [Platform.ANDROID]:
+            if self.config.target_arch == Architecture.ARM64:
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/')
+                self.append_env('LDFLAGS', '-lc++_shared')
+                self.configure_options += ' -DUSE_GNUSTL=ON'
+            elif self.config.target_arch == Architecture.ARMv7:
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/')
+                self.append_env('LDFLAGS', '-lc++_shared')
+                self.configure_options += ' -DUSE_GNUSTL=ON'
+            elif self.config.target_arch == Architecture.X86:
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/x86/')
+                self.append_env('LDFLAGS', '-lc++_shared')
+                self.configure_options += ' -DUSE_GNUSTL=ON'
+            elif self.config.target_arch == Architecture.X86_64:
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/x86_64/')
+                self.append_env('LDFLAGS', '-lc++_shared')
+                self.configure_options += ' -DUSE_GNUSTL=ON'

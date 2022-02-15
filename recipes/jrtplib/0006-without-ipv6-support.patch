@@ -1,0 +1,25 @@
+From 4ea12020d110592573b4dd88cc0f228b91e6552f Mon Sep 17 00:00:00 2001
+From: lvting <lvting@iauto.com>
+Date: Thu, 11 Jul 2019 12:30:33 +0000
+Subject: [PATCH] without ipv6 support
+
+---
+ src/rtpconfig.h.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/rtpconfig.h.in b/src/rtpconfig.h.in
+index b6512a0..793ad88 100644
+--- a/src/rtpconfig.h.in
++++ b/src/rtpconfig.h.in
+@@ -69,7 +69,7 @@ ${RTP_SUPPORT_PROBATION}
+ 
+ ${RTP_SUPPORT_GETLOGINR}
+ 
+-${RTP_SUPPORT_IPV6}
++// ${RTP_SUPPORT_IPV6}
+ 
+ ${RTP_SUPPORT_IPV6MULTICAST}
+ 
+-- 
+2.7.4
+

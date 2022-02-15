@@ -1,0 +1,33 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+import os
+import shutil
+from cerbero.tools.libtool import LibtoolLibrary
+
+class Recipe(recipe.Recipe):
+    name = 'libmnl'
+    version = '1.0.4'
+    btype = BuildType.AUTOTOOLS
+    stype = SourceType.TARBALL
+    url = 'https://www.netfilter.org/projects/libmnl/files/libmnl-%(version)s.tar.bz2'
+    tarball_checksum = '171f89699f286a5854b72b91d06e8f8e3683064c5901fb09d954a9ab6f551f81'
+
+    licenses = [License.LGPLv2_1Plus]
+#    deps = ['xxx']
+#    files_libs = ['libmnl']
+#    files_devel = ['include/xxx.h'] #, 'lib/pkgconfig/xxx.pc']
+
+    async def configure(self):
+        if self.config.target_platform == Platform.ANDROID:
+            if Architecture.is_arm(self.config.target_arch):
+                self.autoreconf = True
+        await super(recipe.Recipe, self).configure()
+
+    def prepare(self):
+        if self.config.target_platform != Platform.LINUX and self.config.target_platform != Platform.ANDROID:
+            raise InvalidRecipeError(self, "Invalid platform")
+
+    def post_install(self):
+        if self.config.target_platform == Platform.ANDROID:
+            super().post_install()
+            LibtoolLibrary('libmnl', 1, 0, 4, self.config.libdir,
+                self.config.target_platform).save()

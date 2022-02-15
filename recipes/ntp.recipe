@@ -1,0 +1,57 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+
+#ntpd - Network Time Protocol (NTP) daemon
+#ntpq - standard NTP query program
+#ntpdc - special NTP query program
+#ntpdate - set the date and time via NTP
+#sntp - Simple Network Time Protocol (SNTP) client
+#ntptrace - trace a chain of NTP servers back to the primary source
+#tickadj - set time-related kernel variables
+#ntptime - read and set kernel time variables
+#ntp-keygen - generate public and private keys
+#ntpdsim - Network Time Protocol (NTP) simulator
+
+class Recipe(recipe.Recipe):
+    name = 'ntp'
+    version = '4.3.99'
+    licenses = [{License.BSD_like: ['COPYRIGHT']}] #BSD-2
+    ##configure, do not need : btype = BuildType.??
+    stype = SourceType.TARBALL
+    url = 'https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-dev/ntp-dev-%(version)s.tar.gz'
+    tarball_dirname = 'ntp-dev-%(version)s'
+    tarball_checksum = '254307ef142c82ddcf9e864a67eb7c9d456f0e3328e44b0c5d9e15acc2222a09'
+
+    ## no -lpthread
+    configure_options = '--with-yielding-select=yes --enable-thread-support=no --enable-linuxcaps=no --enable-accurate-adjtime=no '
+    #--without-sntp
+
+    ## no adjtime() in /cerbero/build/android-ndk-21/sysroot/usr/include/sys/time.h, 
+    ##              so fake func, need to define our own adjtime() in libntp/adjtime.c  @!@!@!@
+    ## no getpass() in android, so use own
+    patches = [name + '/0001-add-adjtime-for-cerbero-compile.patch',
+                name + '/0002-use-own-getpass.patch']
+
+    def prepare(self):
+        if self.config.target_platform in [Platform.ANDROID]:
+            if self.config.target_arch == Architecture.ARM64:
+                #self.append_env('CFLAGS', ' -fexceptions ')
+                ## remove /config/android.config : -fno-exceptions
+                self.append_env('CXXFLAGS', ' -fexceptions ')
+                ## reset LDFLAGS to remove /config/android.config: -Wl,-no-undefined
+                self.set_env('LDFLAGS', '-gcc-toolchain ' + self.config.toolchain_prefix + '/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64')
+                self.append_env('LDFLAGS', '-fPIC -no-canonical-prefixes -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--gc-sections -Wl,--warn-shared-textrel -Wl,--exclude-libs,libatomic.a -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libunwind.a')
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/')
+                ## ANDROID_PIE = 'android_28_pie' # API Level 28
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/28')
+                self.append_env('LDFLAGS', '-lc++_shared')
+            if self.config.target_arch == Architecture.ARMv7:
+                #self.append_env('CFLAGS', ' -fexceptions ')
+                ## remove /config/android.config : -fno-exceptions
+                self.append_env('CXXFLAGS', ' -fexceptions ')
+                ## reset LDFLAGS to remove /config/android.config: -Wl,-no-undefined
+                self.set_env('LDFLAGS', '-gcc-toolchain ' + self.config.toolchain_prefix + '/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64')
+                self.append_env('LDFLAGS', '-fPIC -no-canonical-prefixes -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--gc-sections -Wl,--warn-shared-textrel -Wl,--exclude-libs,libatomic.a -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libunwind.a')
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/')
+                ## ANDROID_PIE = 'android_28_pie' # API Level 28
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/arm-linux-androideabi/28')
+                self.append_env('LDFLAGS', '-lc++_shared')

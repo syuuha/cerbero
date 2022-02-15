@@ -1,0 +1,26 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+from cerbero.tools.libtool import LibtoolLibrary
+
+class Recipe(recipe.Recipe):
+    name = 'libpcap'
+    version = '1.9.1'
+    btype = BuildType.AUTOTOOLS
+    stype = SourceType.TARBALL
+    url = 'https://www.tcpdump.org/release/libpcap-%(version)s.tar.gz'
+    tarball_checksum = '635237637c5b619bcceba91900666b64d56ecb7be63f298f601ec786ce087094'
+    licenses = [{License.BSD_like: ['LICENSE']}]
+
+    files_libs = ['libpcap']
+    files_devel = ['include/pcap.h', 'include/pcap-bpf.h', 'include/pcap-namedb.h', 
+                   'include/pcap/bluetooth.h', 'include/pcap/bpf.h', 'include/pcap/can_socketcan.h', 
+                   'include/pcap/compiler-tests.h', 'include/pcap/dlt.h', 'include/pcap/funcattrs.h', 
+                   'include/pcap/ipnet.h', 'include/pcap/namedb.h', 'include/pcap/nflog.h', 
+                    'include/pcap/pcap.h', 'include/pcap/pcap-inttypes.h', 'include/pcap/sll.h', 
+                    'include/pcap/socket.h', 'include/pcap/usb.h', 'include/pcap/vlan.h', 
+                    'lib/pkgconfig/libpcap.pc']
+
+    def post_install(self):
+        libtool_la = LibtoolLibrary('pcap', 1, 9, 1, self.config.libdir,
+                self.config.target_platform)
+        libtool_la.save()
+        super().post_install()

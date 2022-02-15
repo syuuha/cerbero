@@ -1,0 +1,46 @@
+From 819de7b1b7b61a18c5c1dd457b1749f217b32812 Mon Sep 17 00:00:00 2001
+From: lvting <lvting@iauto.com>
+Date: Sat, 20 Jul 2019 03:06:10 +0000
+Subject: [PATCH] use libc++
+
+---
+ CMakeLists.txt | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5f689c6..79936be 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -41,6 +41,7 @@ set(JRTPLIB_INTERNAL_INCLUDES "")
+ set(JRTPLIB_EXTERNAL_INCLUDES "")
+ 
+ include_directories("/home/yangshusen/BSP/cerbero/build/android-ndk-21/sysroot/usr/include/")
++include_directories("../../../../build/android-ndk-21/sources/cxx-stl/llvm-libc++/include")
+ 
+ add_additional_stuff(JRTPLIB_EXTERNAL_INCLUDES JRTPLIB_LINK_LIBS)
+ 
+@@ -107,13 +108,14 @@ else (CMAKE_CROSSCOMPILING)
+ endif (CMAKE_CROSSCOMPILING)
+ 
+ option(JRTPLIB_COMPILE_TESTS "Compile various tests in the 'tests' subdirectory" NO)
+-option(USE_GNUSTL "Get c++ library/headers from the gnustl.pc" OFF)
+-
+-if ( USE_GNUSTL )
+-    pkg_check_modules (GNUSTL REQUIRED gnustl)
+-    link_directories(${GNUSTL_LIBRARY_DIRS})
+-    include_directories(${GNUSTL_INCLUDE_DIRS})
+-endif()
++set(CMAKE_ANDROID_STL_TYPE c++_shared)
++#option(USE_GNUSTL "Get c++ library/headers from the gnustl.pc" OFF)
++#
++#if ( USE_GNUSTL )
++#    pkg_check_modules (GNUSTL REQUIRED gnustl)
++#    link_directories(${GNUSTL_LIBRARY_DIRS})
++#    include_directories(${GNUSTL_INCLUDE_DIRS})
++#endif()
+ 
+ # Check winsock first
+ set(TESTDEFS "")
+-- 
+2.7.4
+
