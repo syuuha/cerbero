@@ -166,8 +166,8 @@ class BaseTarball(object):
         split[2] = urllib.parse.quote(split[2])
         self.url = urllib.parse.urlunsplit(split)
         o = urllib.parse.urlparse(self.url)
-        if o.scheme in ('http', 'ftp'):
-            raise FatalError('Download URL {!r} must use HTTPS'.format(self.url))
+        #if o.scheme in ('http', 'ftp'):
+        #    raise FatalError('Download URL {!r} must use HTTPS'.format(self.url))
 
     def _get_download_path(self):
         '''
