@@ -8,8 +8,13 @@ last commit: 316f1b65baddcc6578cb1422c2fa00de72e8618f(Sat Feb 22 04:02:15 2020 +
 
 
 --------------------
-[使用 docker ubuntu:20.04]
-  #gstreamer 1.19开始也需要ubuntu 20.04配合
+[使用 docker ubuntu:20.04]   #gstreamer 1.19开始也需要ubuntu 20.04配合
+
+#启动个带共享目录的容器
+docker run --privileged=true -it -v /home/yangshusen:/mnt ubuntu:20.04 /bin/bash
+#进入容器
+docker exec -it 容器ID或名字 /bin/bash
+
 
 apt install git-all
 apt install pip

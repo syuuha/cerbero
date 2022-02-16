@@ -22,7 +22,7 @@ class Recipe(recipe.Recipe):
     ## git add .
     ## git commit -m "add makefile(linux-with-shared-libraries-no-openssl)"
     ## git format-patch COMMITID  --> *.patch
-    ## fix "PREFIX = /usr/local" to "PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64"
+    ## fix "PREFIX = /usr/local" to "PREFIX = /mnt/BSP/cerbero/build/dist/android_arm64"
     patches = [name + '/0001-add-makefile-config.linux-with-shared-libraries-no-o.patch']
 
 

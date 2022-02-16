@@ -9,7 +9,7 @@ import shutil
 #################################################################################################
 # The functions in spawn.h are only available on Android P and later (API level 28, ANDROID_PIE)
 #################################################################################################
-#1. /home/yangshusen/BSP/cerbero/config/cross-android-arm64.cbc
+#1. /mnt/BSP/cerbero/config/cross-android-arm64.cbc
 #   target_distro_version = DistroVersion.ANDROID_PIE
 #
 #2. add linuxptp.recipe for cerbero

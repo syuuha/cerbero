@@ -17,7 +17,7 @@ index 27c4d78..8593ce4 100644
  # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  
 -KBUILD_OUTPUT =
-+KBUILD_OUTPUT =/home/yangshusen/BSP/cerbero/build/dist/android_arm64
++KBUILD_OUTPUT =/mnt/BSP/cerbero/build/dist/android_arm64
  
 -DEBUG	=
 -CC	= $(CROSS_COMPILE)gcc
@@ -36,7 +36,7 @@ index 27c4d78..8593ce4 100644
  VPATH	= $(srcdir)
  
 -prefix	= /usr/local
-+prefix	= /home/yangshusen/BSP/cerbero/build/dist/android_arm64
++prefix	= /mnt/BSP/cerbero/build/dist/android_arm64
  sbindir	= $(prefix)/sbin
  mandir	= $(prefix)/man
  man8dir	= $(mandir)/man8

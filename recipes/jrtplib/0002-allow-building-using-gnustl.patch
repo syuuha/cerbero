@@ -15,7 +15,7 @@ index ca90cd2..5f689c6 100644
  set(JRTPLIB_INTERNAL_INCLUDES "")
  set(JRTPLIB_EXTERNAL_INCLUDES "")
  
-+include_directories("/home/yangshusen/BSP/cerbero/build/android-ndk-21/sysroot/usr/include/")
++include_directories("/mnt/BSP/cerbero/build/android-ndk-21/sysroot/usr/include/")
 +
  add_additional_stuff(JRTPLIB_EXTERNAL_INCLUDES JRTPLIB_LINK_LIBS)
  

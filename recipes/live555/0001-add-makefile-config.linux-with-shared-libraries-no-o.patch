@@ -32,7 +32,7 @@ index 0000000..d0871f0
 +++ b/BasicUsageEnvironment/Makefile
 @@ -0,0 +1,93 @@
 +INCLUDES = -Iinclude -I../UsageEnvironment/include -I../groupsock/include
-+PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64
++PREFIX = /mnt/BSP/cerbero/build/dist/android_arm64
 +LIBDIR = $(PREFIX)/lib
 +##### Change the following for your environment:
 +# 'CURRENT':'REVISION':'AGE' are updated - whenever a library changes - as follows:
@@ -238,7 +238,7 @@ index 0000000..be96e80
 +++ b/UsageEnvironment/Makefile
 @@ -0,0 +1,87 @@
 +INCLUDES = -Iinclude -I../groupsock/include
-+PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64
++PREFIX = /mnt/BSP/cerbero/build/dist/android_arm64
 +LIBDIR = $(PREFIX)/lib
 +##### Change the following for your environment:
 +# 'CURRENT':'REVISION':'AGE' are updated - whenever a library changes - as follows:
@@ -331,7 +331,7 @@ index 0000000..54fdbbf
 +++ b/groupsock/Makefile
 @@ -0,0 +1,94 @@
 +INCLUDES = -Iinclude -I../UsageEnvironment/include
-+PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64
++PREFIX = /mnt/BSP/cerbero/build/dist/android_arm64
 +LIBDIR = $(PREFIX)/lib
 +##### Change the following for your environment:
 +# 'CURRENT':'REVISION':'AGE' are updated - whenever a library changes - as follows:
@@ -430,7 +430,7 @@ index 0000000..dd9ca61
 --- /dev/null
 +++ b/hlsProxy/Makefile
 @@ -0,0 +1,91 @@
-+PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64
++PREFIX = /mnt/BSP/cerbero/build/dist/android_arm64
 +INCLUDES = -I../UsageEnvironment/include -I../groupsock/include -I../liveMedia/include -I../BasicUsageEnvironment/include
 +# Default library filename suffixes for each library that we link with.  The "config.*" file might redefine these later.
 +libliveMedia_LIB_SUFFIX = $(LIB_SUFFIX)
@@ -528,7 +528,7 @@ index 0000000..893da4c
 +++ b/liveMedia/Makefile
 @@ -0,0 +1,495 @@
 +INCLUDES = -Iinclude -I../UsageEnvironment/include -I../groupsock/include
-+PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64
++PREFIX = /mnt/BSP/cerbero/build/dist/android_arm64
 +LIBDIR = $(PREFIX)/lib
 +##### Change the following for your environment:
 +# 'CURRENT':'REVISION':'AGE' are updated - whenever a library changes - as follows:
@@ -1028,7 +1028,7 @@ index 0000000..63f1dcc
 --- /dev/null
 +++ b/mediaServer/Makefile
 @@ -0,0 +1,94 @@
-+PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64
++PREFIX = /mnt/BSP/cerbero/build/dist/android_arm64
 +INCLUDES = -I../UsageEnvironment/include -I../groupsock/include -I../liveMedia/include -I../BasicUsageEnvironment/include
 +# Default library filename suffixes for each library that we link with.  The "config.*" file might redefine these later.
 +libliveMedia_LIB_SUFFIX = $(LIB_SUFFIX)
@@ -1128,7 +1128,7 @@ index 0000000..5cbaa94
 --- /dev/null
 +++ b/proxyServer/Makefile
 @@ -0,0 +1,91 @@
-+PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64
++PREFIX = /mnt/BSP/cerbero/build/dist/android_arm64
 +INCLUDES = -I../UsageEnvironment/include -I../groupsock/include -I../liveMedia/include -I../BasicUsageEnvironment/include
 +# Default library filename suffixes for each library that we link with.  The "config.*" file might redefine these later.
 +libliveMedia_LIB_SUFFIX = $(LIB_SUFFIX)
@@ -1225,7 +1225,7 @@ index 0000000..983ad15
 --- /dev/null
 +++ b/testProgs/Makefile
 @@ -0,0 +1,232 @@
-+PREFIX = /home/yangshusen/BSP/cerbero/build/dist/android_arm64
++PREFIX = /mnt/BSP/cerbero/build/dist/android_arm64
 +INCLUDES = -I../UsageEnvironment/include -I../groupsock/include -I../liveMedia/include -I../BasicUsageEnvironment/include
 +# Default library filename suffixes for each library that we link with.  The "config.*" file might redefine these later.
 +libliveMedia_LIB_SUFFIX = $(LIB_SUFFIX)
