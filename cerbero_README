@@ -6,6 +6,36 @@ last commit: 316f1b65baddcc6578cb1422c2fa00de72e8618f(Sat Feb 22 04:02:15 2020 +
 代码包与NDK下载位置
 /home/username/.cache/cerbero-sources
 
+
+--------------------
+[使用 docker ubuntu:20.04]
+  #gstreamer 1.19开始也需要ubuntu 20.04配合
+
+apt install git-all
+apt install pip
+pip3 install ninja
+pip3 install meson
+pip3 install distro
+
+cd ~/.cache/cerbero-sources/   #docker下源码目录
+ls -a
+cp /root/.cache/cerbero-sources/android-ndk-r21-linux-x86_64.zip ~/.cache/cerbero-sources/
+
+/cerbero/cerbero/bootstrap/linux.py      docker下去除sudo
+  DebianBootstrapper
+  tool = ['sudo', 'apt-get']  改为  tool = ['apt-get']
+
+==================================
+
+去除强制https, 为了live555的http下载.
+
+/cerbero/cerbero/build/source.py
+
+        #if o.scheme in ('http', 'ftp'):
+        #    raise FatalError('Download URL {!r} must use HTTPS'.format(self.url))
+
+==================================
+
 --------------------
 
 
@@ -23,26 +53,29 @@ git config --global core.autocrlf false   --> 防止cerbero调用git时fatal
 ./cerbero-uninstalled -c config/cross-android-arm64.cbc bootstrap
  
 3. 根据Morley的项目需要，要组入以下lib: 
+(buildone会重编,且只编译该lib. build不会重编,但会编译相关依赖lib)
 ./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone ffmpeg
 ./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone libiconv
 ./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone libffi
 ./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone zlib
 ./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone proxy-libintl
-./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone glib
-./cerbero-uninstalled -c config/cross-android-arm64.cbc buildone jrtplib
+./cerbero-uninstalled -c config/cross-android-arm64.cbc build glib
+
+./cerbero-uninstalled -c config/cross-android-arm64.cbc build jrtplib    #修改默认大小端,参考morley改动
+./cerbero-uninstalled -c config/cross-android-arm64.cbc build libmnl
+./cerbero-uninstalled -c config/cross-android-arm64.cbc build ethtool
+./cerbero-uninstalled -c config/cross-android-arm64.cbc build libpcap
+./cerbero-uninstalled -c config/cross-android-arm64.cbc build ntp
+./cerbero-uninstalled -c config/cross-android-arm64.cbc build linuxptp   #需要ANDROID_PIE(API 28)
+./cerbero-uninstalled -c config/cross-android-arm64.cbc build libavb
+./cerbero-uninstalled -c config/cross-android-arm64.cbc build live555
+
+
 
 NOTE: ffmpeg按项目要求最小化裁剪，会导致gstreamer缺少依赖的包libavfilter等，编译失败
 
 
-==================================
 
-去除强制https
-/cerbero/cerbero/build/source.py
-
-        #if o.scheme in ('http', 'ftp'):
-        #    raise FatalError('Download URL {!r} must use HTTPS'.format(self.url))
-
-==================================
 
 
 ------------------------------------------------------------------------------
@@ -64,10 +97,11 @@ NDK_CHECKSUMS = {
 
 [修改安卓版本]
 /home/username/BSP/cerbero/config/cross-android-arm64.cbc
-  target_distro_version = DistroVersion.ANDROID_LOLLIPOP
+  默认target_distro_version = DistroVersion.ANDROID_LOLLIPOP
+  linuxptp需要ANDROID_PIE(API 28)
 
 /home/username/BSP/cerbero/config/cross-android-armv7.cbc
-  target_distro_version = DistroVersion.ANDROID_LOLLIPOP
+  默认target_distro_version = DistroVersion.ANDROID_LOLLIPOP
 
 [修改gstreamer版本]
 /home/username/BSP/cerbero_r18/recipes/custom.py
@@ -134,20 +168,11 @@ Android 1.0 (Base)	1
 
 
 
+============================================================================
 
 
 
 
-
-==================================
-
-#python最好维持在ubuntu原始版本3.5!!!!!!!, 
-#已经升级的可以下个3.5的包,编译后安装.
-sudo pip3 install meson
-sudo pip3 install ninja
-
-
-------------------------------------------------------------------------------
 升级ubuntu的 zlib 到 1.2.11
 下面的libpng与zlib版本不一致,就不会保存.   libpng check的是ubuntu的zlib版本....
 
@@ -161,4 +186,34 @@ sudo pip3 install ninja
 //./configure --host aarch64-none-linux-android --prefix=/home/username/BSP/cerbero/build/dist/android_arm64 --libdir=/home/username/BSP/cerbero/build/dist/android_arm64/lib
 //make
 //make install
+
+
+------------------------------------------------------------------------------
+Master分支(2022/02/16) 与 ubuntu 16.04
+
+>>File "/home/yangshusen/BSP/cerbero/cerbero/utils/__init__.py", line 250, in system_info
+>>    elif distro_version in ['focal'] or (distro_version[0] == 'u' and d[1].startswith('20.')):
+>>IndexError: string index out of range
+
+报这个ubuntu 20的错,可以把下面注释掉
+ #elif distro_version in ['focal'] or (distro_version[0] == 'u' and d[1].startswith('20.')):
+ #    distro_version = DistroVersion.UBUNTU_FOCAL
+
+
+------------------------------------------------------------------------------
+#python最好维持在ubuntu原始版本3.5!!!!!!!, 升级python, 不如docker ubuntu
+#已经升级的可以下个3.5的包,编译后安装.
+sudo pip3 install meson
+sudo pip3 install ninja
+
+
+
+>>ERROR: Tried to install Meson with an unsupported Python version: 
+>>3.5.10 (default, Sep 23 2020, 20:15:27) 
+>>[GCC 5.4.0 20160609]
+>>Meson requires Python 3.6.0 or greater
+
+Master分支(2022/02/16) 要求py3.6了, 
+其它main,1.20,1.18分支(r21 NDK)也有各种错误.
+1.16分支是r18b NDK. morley以此为base.    //git checkout -b 1.16 origin/1.16
 

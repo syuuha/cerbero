@@ -59,7 +59,7 @@ class UnixBootstrapper (BootstrapperBase):
 
 class DebianBootstrapper (UnixBootstrapper):
 
-    tool = ['sudo', 'apt-get']
+    tool = ['apt-get']
     command = ['install']
     yes_arg = ['-y']
     packages = [
