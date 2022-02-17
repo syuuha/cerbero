@@ -10,7 +10,7 @@ class Recipe(recipe.Recipe):
     stype = SourceType.TARBALL
     ## remove /cerbero/cerbero/build/source.py if o.scheme in ('http', 'ftp')
     #url = 'http://www.live555.com/liveMedia/public/live.%(version)s.tar.gz'
-    url = 'http://download.videolan.org/pub/contrib/live555/live.%(version)s.tar.gz'
+    url = 'https://download.videolan.org/pub/contrib/live555/live.%(version)s.tar.gz'  # change back to https
     tarball_dirname = 'live'   # tar.gz extract to 'live' 
     tarball_checksum = 'b7eae32bfc03275c5fb6d4a95c2161598ddac07c1ca2a95efa72039246e66992'
 
