@@ -1,0 +1,91 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+import shutil
+from cerbero.tools.libtool import LibtoolLibrary
+
+class Recipe(recipe.Recipe):
+
+    name = 'opencv'
+    version = '4.5.5'
+    licenses = [License.Apachev2]
+    btype = BuildType.CMAKE
+    stype = SourceType.TARBALL
+    url = 'https://github.com/opencv/opencv/archive/refs/tags/%(version)s.tar.gz'
+    tarball_checksum = 'a1cfdcf6619387ca9e232687504da996aaa9f7b5689986b8331ec02cb61d28ad'
+
+    #stype = SourceType.GIT
+    #remotes = {'origin': 'https://github.com/xxx.git'}
+    #commit = 'origin/master'
+    #tarball_dirname = 'opencv-4.5.5'
+
+    configure_options = '-DWITH_PNG=OFF -DANDROID_STL=c++_shared '
+         #   configure_options = ' -DWITH_1394=OFF -DWITH_AVFOUNDATION=OFF -DWITH_CAP_IOS=OFF -DWITH_CAROTENE=OFF -DWITH_CPUFEATURES=OFF \
+         #                        -DWITH_VTK=OFF -DWITH_CUDA=OFF -DWITH_CUFFT=OFF -DWITH_CUBLAS=OFF \
+         #                        -DWITH_JASPER=OFF -DWITH_OPENJPEG=OFF -DWITH_OPENGL=OFF -DWITH_PNG=OFF -DWITH_TIFF=OFF \
+         #                        -DWITH_JPEG=OFF -DWITH_WEBP=OFF -DWITH_PROTOBUF=OFF \
+         #                        -DWITH_PTHREADS_PF=OFF -DWITH_IMGCODEC_HDR=OFF -DWITH_IMGCODEC_SUNRASTER=OFF -DWITH_IMGCODEC_PXM=OFF -DWITH_IMGCODEC_PFM=OFF \
+         #                        -DANDROID_STL=c++_shared -DUSE_GNUSTL=ON '
+    #platform_deps = {Platform.ANDROID: ['gnustl']}
+
+    #通常链接pthread在CMake脚本中都是这样做的  target_link_libraries(xxx pthread)
+    #然而在Android NDK中posix线程库被归纳到了c++库中, 所以正确的链接方法是链接C++库  target_link_libraries(xxx stdc++)
+    patches = [name + '/0001-Fix-to-use-the-stdc-instead-of-pthread-rt-in-android.patch',] #如果能正确识别 CMakeLists.txt中Line661的ANDROID, 那就不用打patch了.
+
+    #deps = ['zlib']
+
+
+    def prepare(self):
+        if self.config.target_platform in [Platform.ANDROID]:
+            if self.config.target_arch == Architecture.ARM64:
+               # self.append_env('CFLAGS', ' -DANDROID ')  #CFLAGS与CXXFLAGS即使配置了-DANDROID, 上面的patch处还是没效果, 所以还是要打patch
+                self.append_env('CXXFLAGS', ' -frtti -fexceptions ') #安卓clang CXX默认关闭了 -fno-rtti, opencv需要打开.
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/')
+                self.append_env('LDFLAGS', ' -lc++_shared ')
+  #              self.configure_options += ' -DUSE_GNUSTL=ON'
+  #          elif self.config.target_arch == Architecture.ARMv7:
+  #              self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/')
+  #              self.append_env('LDFLAGS', '-lc++_shared')
+  #              self.configure_options += ' -DUSE_GNUSTL=ON'
+  #          elif self.config.target_arch == Architecture.X86:
+  #              self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/x86/')
+  #              self.append_env('LDFLAGS', '-lc++_shared')
+  #              self.configure_options += ' -DUSE_GNUSTL=ON'
+  #          elif self.config.target_arch == Architecture.X86_64:
+  #              self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/x86_64/')
+  #              self.append_env('LDFLAGS', '-lc++_shared')
+  #              self.configure_options += ' -DUSE_GNUSTL=ON'
+
+    #生成la文件,可以不写
+    def post_install(self):
+        LibtoolLibrary('opencv_calib3d', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_core', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_dnn', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_features2d', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_flann', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_gapi', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_highgui', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_imgcodecs', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_imgproc', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_ml', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_objdetect', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_gapi', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_photo', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_stitching', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_video', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        LibtoolLibrary('opencv_videoio', 4, 5, 5,
+                       self.config.libdir, self.config.target_platform).save()
+        super().post_install()
