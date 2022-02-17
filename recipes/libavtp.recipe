@@ -1,0 +1,22 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+from cerbero.tools.libtool import LibtoolLibrary
+
+
+class Recipe(recipe.Recipe):
+    name = 'avtp'
+    version = '0.2.0'
+    btype = BuildType.MESON
+    #stype = SourceType.GIT
+    #remotes = {'origin': 'https://github.com/Avnu/libavtp.git'}
+    #commit = 'origin/master'
+    stype = SourceType.TARBALL
+    url = 'https://github.com/Avnu/libavtp/archive/refs/tags/v%(version)s.tar.gz'
+    tarball_checksum = '631f5e704a1b7c8f953ca017a382ad945e75c2952c81813ff355e9ab8071b70e'
+    tarball_dirname = 'libavtp-0.2.0'
+    licenses =  [{License.BSD: ['LICENSE']}]
+
+    def post_install(self):
+        libtool_la = LibtoolLibrary('avtp', 0, 2, 0, self.config.libdir,
+                self.config.target_platform)
+        libtool_la.save()
+        super().post_install()
