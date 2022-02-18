@@ -1,0 +1,35 @@
+From b6e9f6ac96d688e0a6b03e99c7df1d67905d62b3 Mon Sep 17 00:00:00 2001
+From: zhoubo <syuuha@qq.com>
+Date: Fri, 18 Feb 2022 14:45:06 +0800
+Subject: [PATCH] Fix to use stdc++ instead of pthread in android
+
+---
+ source/CMakeLists.txt | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/source/CMakeLists.txt b/source/CMakeLists.txt
+index 60031df..0d11ed9 100755
+--- a/source/CMakeLists.txt
++++ b/source/CMakeLists.txt
+@@ -94,7 +94,7 @@ else()
+ endif()
+ 
+ if(UNIX)
+-    list(APPEND PLATFORM_LIBS pthread)
++    #list(APPEND PLATFORM_LIBS pthread)
+     find_library(LIBRT rt)
+     if(LIBRT)
+         list(APPEND PLATFORM_LIBS rt)
+@@ -730,7 +730,8 @@ if(X265_LATEST_TAG)
+     endforeach()
+     if(PLIBLIST)
+         # blacklist of libraries that should not be in Libs.private
+-        list(REMOVE_ITEM PLIBLIST "-lc" "-lpthread" "-lmingwex" "-lmingwthrd"
++        #list(REMOVE_ITEM PLIBLIST "-lc" "-lpthread" "-lmingwex" "-lmingwthrd"
++        list(REMOVE_ITEM PLIBLIST "-lc" "-lmingwex" "-lmingwthrd"
+             "-lmingw32" "-lmoldname" "-lmsvcrt" "-ladvapi32" "-lshell32"
+             "-luser32" "-lkernel32")
+         string(REPLACE ";" " " PRIVATE_LIBS "${PLIBLIST}")
+-- 
+2.27.0.221.ga08a83db2b
+

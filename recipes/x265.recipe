@@ -1,0 +1,31 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+from cerbero.tools.libtool import LibtoolLibrary
+
+
+class Recipe(recipe.Recipe):
+    version = '2022-02-18'
+    name = 'x265'
+    licenses = [License.GPLv2Plus]
+    btype = BuildType.CMAKE
+    stype = SourceType.GIT
+    remotes = {'origin': 'https://bitbucket.org/multicoreware/x265_git.git'}
+    commit = 'origin/master'
+
+ #   stype = SourceType.TARBALL
+ #   url = 'https://download.videolan.org/pub/videolan/x265/x265_3.2.tar.gz'      some problem?? not OK
+ #   tarball_dirname= 'x265'
+ #   tarball_checksum = '364d79bcd56116a9e070fdeb1d9d2aaef1a786b4970163fb56ff0991a183133b'
+
+    patches = [name + '/0001-add-top-CMakeLists.txt-for-cerbero-build.patch', #add top CMakeLists.txt, for x265's source folder
+                name + '/0001-Fix-to-use-stdc-instead-of-pthread-in-android.patch'] #remove pthread
+
+    files_libs = ['libx265']
+    files_bins = ['x265']
+
+    def prepare(self):
+        if self.config.target_platform in [Platform.ANDROID]:
+            if self.config.target_arch == Architecture.ARM64:
+                self.append_env('CXXFLAGS', ' -frtti ') #安卓clang CXX默认关闭了 -fno-rtti, libx265需要打开.
+                self.append_env('LDFLAGS', '-L' + self.config.toolchain_prefix + '/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/')
+                self.append_env('LDFLAGS', ' -lc++_shared ')
+

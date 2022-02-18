@@ -1,0 +1,24 @@
+From 0e00958cf062e86ee0fb139bf1b89d43c0ea25bc Mon Sep 17 00:00:00 2001
+From: zhoubo <syuuha@qq.com>
+Date: Fri, 18 Feb 2022 12:28:16 +0800
+Subject: [PATCH] add top CMakeLists.txt for cerbero build
+
+---
+ CMakeLists.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
+ create mode 100644 CMakeLists.txt
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..9426924
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,5 @@
++#cmake_minimum_required(VERSION 2.8.8)
++#PROJECT(x265)
++
++add_subdirectory(source)
++
+-- 
+2.27.0.221.ga08a83db2b
+
