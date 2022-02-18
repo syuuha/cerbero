@@ -1,5 +1,5 @@
 From d50e4b163280e44f49720cd4f40c7f990a55b72b Mon Sep 17 00:00:00 2001
-From: zhoubo <zhoubo@iauto.com>
+From: zhoubo <syuuha@qq.com>
 Date: Sun, 23 May 2021 20:29:25 +0800
 Subject: [PATCH] add makefile(config.linux-with-shared-libraries-no-openssl)
  for cerbero

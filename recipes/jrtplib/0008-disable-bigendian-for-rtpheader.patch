@@ -1,5 +1,5 @@
 From 4937138416a451d17bd0229460eb2c1901bc762c Mon Sep 17 00:00:00 2001
-From: lvting <lvting@iauto.com>
+From: xx <xx@xx.com>
 Date: Sat, 20 Jul 2019 05:37:43 +0000
 Subject: [PATCH] disable bigendian for rtpheader
 

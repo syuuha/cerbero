@@ -1,5 +1,5 @@
 From b85a29e23aa22f268b5d38c8683cc2cdc0dc79c7 Mon Sep 17 00:00:00 2001
-From: zhoubo <zhoubo@iauto.com>
+From: zhoubo <syuuha@qq.com>
 Date: Thu, 17 Feb 2022 11:10:46 +0800
 Subject: [PATCH] Fix-to-use-the-stdc++-instead-of-pthread-rt in android
 

@@ -1,5 +1,5 @@
 From 19c55b4e7cf9a5624c2f6f8dcade822a90f9f10e Mon Sep 17 00:00:00 2001
-From: zhoubo <zhoubo@iauto.com>
+From: zhoubo <syuuha@qq.com>
 Date: Mon, 24 May 2021 20:33:04 +0800
 Subject: [PATCH] add adjtime() for cerbero compile
 

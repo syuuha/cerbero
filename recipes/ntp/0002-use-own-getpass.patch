@@ -1,5 +1,5 @@
 From 9ce14025ac175ae52000f140f4c6f9d4ff0b1e6c Mon Sep 17 00:00:00 2001
-From: zhoubo <zhoubo@iauto.com>
+From: zhoubo <syuuha@qq.com>
 Date: Tue, 25 May 2021 21:37:43 +0800
 Subject: [PATCH] use own getpass()
 
