@@ -1,0 +1,16 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+
+
+class Recipe(recipe.Recipe):
+    name = 'speexdsp'
+    version = '1.2.1'
+    stype = SourceType.TARBALL
+    url = 'https://ftp.osuosl.org/pub/xiph/releases/speex/speexdsp-%(version)s.tar.gz'
+    tarball_checksum = '8c777343e4a6399569c72abc38a95b24db56882c83dbdb6c6424a5f4aeb54d3d'
+    licenses = [{License.BSD_like: ['COPYING']}]
+
+    files_libs = ['libspeexdsp']
+
+    def prepare(self):
+        if self.config.target_platform == Platform.ANDROID:
+            self.autoreconf = True
