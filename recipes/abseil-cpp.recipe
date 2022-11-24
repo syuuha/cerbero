@@ -1,0 +1,62 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+
+########################################################################
+#
+# only arm64 right now,  not support armv7 for fseeko,ftello.....
+#
+########################################################################
+
+# ref from webrtc-audio-processing-master/subprojects/abseil-cpp.wrap
+
+from cerbero.tools.libtool import LibtoolLibrary
+
+class Recipe(recipe.Recipe):
+
+    name = 'abseil-cpp'
+    version = '20210324.2'
+    licenses = [License.Apachev2]
+    btype = BuildType.MESON
+    stype = SourceType.TARBALL
+    url = 'https://github.com/abseil/abseil-cpp/archive/20210324.2.tar.gz'
+    tarball_checksum = '59b862f50e710277f8ede96f083a5bb8d7c9595376146838b9580be90374ee1f'
+
+    patches = [
+        'abseil-cpp-20210324.2/0001-add-LICENSE.build-of-abseil-cpp_20210324.2-3_patch.patch',
+        'abseil-cpp-20210324.2/0002-add-meson.build-of-abseil-cpp_20210324.2-3_patch.patch',
+        'abseil-cpp-20210324.2/0003-fix-meson-for-lib-so-install.patch',
+    ]
+
+    #files_libs = ['libabsl']
+    #files_devel = ['lib/pkgconfig/libabsl_base.pc']
+
+#    def post_install(self):
+#        LibtoolLibrary('libabsl', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_base', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_hash', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_numeric', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_strings', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_debugging', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_random', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_time', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_types', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_synchronization', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_container', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_flags', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_status', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        LibtoolLibrary('absl_status', None, None, None,
+#                self.config.libdir, self.config.target_platform).save()
+#        super().post_install()
+
