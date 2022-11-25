@@ -1,0 +1,49 @@
+From 9bada358283eaea759223c0ca0c01306b02cdfc3 Mon Sep 17 00:00:00 2001
+From: zhoubo <zhoubo@iauto.com>
+Date: Fri, 25 Nov 2022 13:33:26 +0800
+Subject: [PATCH] use isfinite in Android, std::isfinite in Linux
+
+---
+ .../audio_processing/echo_detector/mean_variance_estimator.cc        | 5 +++++
+ .../echo_detector/normalized_covariance_estimator.cc                 | 5 +++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/webrtc/modules/audio_processing/echo_detector/mean_variance_estimator.cc b/webrtc/modules/audio_processing/echo_detector/mean_variance_estimator.cc
+index a857403..e16fef0 100644
+--- a/webrtc/modules/audio_processing/echo_detector/mean_variance_estimator.cc
++++ b/webrtc/modules/audio_processing/echo_detector/mean_variance_estimator.cc
+@@ -26,8 +26,13 @@ void MeanVarianceEstimator::Update(float value) {
+   mean_ = (1.f - kAlpha) * mean_ + kAlpha * value;
+   variance_ =
+       (1.f - kAlpha) * variance_ + kAlpha * (value - mean_) * (value - mean_);
++#ifdef __ANDROID__
+   RTC_DCHECK(isfinite(mean_));
+   RTC_DCHECK(isfinite(variance_));
++#else // Linux
++  RTC_DCHECK(std::isfinite(mean_));
++  RTC_DCHECK(std::isfinite(variance_));
++#endif
+ }
+ 
+ float MeanVarianceEstimator::std_deviation() const {
+diff --git a/webrtc/modules/audio_processing/echo_detector/normalized_covariance_estimator.cc b/webrtc/modules/audio_processing/echo_detector/normalized_covariance_estimator.cc
+index 8ec9fe9..b9629ad 100644
+--- a/webrtc/modules/audio_processing/echo_detector/normalized_covariance_estimator.cc
++++ b/webrtc/modules/audio_processing/echo_detector/normalized_covariance_estimator.cc
+@@ -31,8 +31,13 @@ void NormalizedCovarianceEstimator::Update(float x,
+   covariance_ =
+       (1.f - kAlpha) * covariance_ + kAlpha * (x - x_mean) * (y - y_mean);
+   normalized_cross_correlation_ = covariance_ / (x_sigma * y_sigma + .0001f);
++#ifdef __ANDROID__
+   RTC_DCHECK(isfinite(covariance_));
+   RTC_DCHECK(isfinite(normalized_cross_correlation_));
++#else // Linux
++  RTC_DCHECK(std::isfinite(covariance_));
++  RTC_DCHECK(std::isfinite(normalized_cross_correlation_));
++#endif
+ }
+ 
+ void NormalizedCovarianceEstimator::Clear() {
+-- 
+2.7.4
+

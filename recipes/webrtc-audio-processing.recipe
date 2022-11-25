@@ -8,9 +8,13 @@ class Recipe(recipe.Recipe):
     licenses = [{License.BSD_like: ['COPYING']}]
     btype = BuildType.MESON
     stype = SourceType.TARBALL
-    #20221125 timestamp
+    # 20221125 timestamp
     url = 'https://gitlab.freedesktop.org/pulseaudio/webrtc-audio-processing/-/archive/master/webrtc-audio-processing-master.tar.gz'
     tarball_checksum = 'e78628d3c20abf8bf79fcc585a7bfca00541dcca5a0803efe081dcd9887f4541'
+
+    # Android use "isfinite", 
+    # Fix : Linux use "std::isfinite"
+    patches = ['webrtc-audio-processing-master/0001-use-isfinite-in-Android-std-isfinite-in-Linux.patch']
 
     platform_deps = {Platform.ANDROID: ['gnustl']}
     deps = ['abseil-cpp']
@@ -19,18 +23,18 @@ class Recipe(recipe.Recipe):
     files_devel = ['include/webrtc_audio_processing', 'lib/pkgconfig/webrtc-audio-processing.pc']
 
     def prepare(self):
+        # for all paltform
+        #flags = ['-I/include']
+        #self.append_env('CFLAGS', *flags)
+        #self.append_env('CPPFLAGS', *flags)
+        self.append_env('LDFLAGS', '-labsl_types')
+
         if self.config.target_platform == Platform.ANDROID:
             # TODO add --enable-neon=runtime, there is a conflict with cerbero
             # that defines -mfpu=vfp... plus webrtc-audio-processing build
             # system is doing it wrong, as it should add -mfpu=neon only for
             # the files that contains neon intrinsic.
             self.meson_options['gnustl'] = 'enabled'
-
-            #flags = ['-I/include']
-            #self.append_env('CFLAGS', *flags)
-            #self.append_env('CPPFLAGS', *flags)
-            #self.append_env('LDFLAGS', '-labsl')
-            self.append_env('LDFLAGS', '-labsl_types')
 
     def post_install(self):
         dependency_libs = []
