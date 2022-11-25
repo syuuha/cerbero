@@ -1,14 +1,15 @@
-From 654995547d3402fa52932a3c0f8dcfb30deaf0fb Mon Sep 17 00:00:00 2001
+From 0138f7972b0f709222b828045e12ce65d77eddfa Mon Sep 17 00:00:00 2001
 From: zhoubo <zhoubo@iauto.com>
-Date: Fri, 25 Nov 2022 10:33:41 +0800
-Subject: [PATCH 3/3] fix meson for static_library & headers install
+Date: Fri, 25 Nov 2022 11:59:32 +0800
+Subject: [PATCH 3/3] fix meson for static_library & headers install, remove
+ absl_flags for armv7 has no fseeko,ftello...
 
 ---
- meson.build | 363 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 363 insertions(+)
+ meson.build | 415 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 389 insertions(+), 26 deletions(-)
 
 diff --git a/meson.build b/meson.build
-index b573fee..feca154 100644
+index b573fee..bd6c472 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -199,18 +199,21 @@ absl_base_lib = static_library(
@@ -80,22 +81,45 @@ index b573fee..feca154 100644
  )
  
  absl_container_lib = static_library(
-@@ -286,6 +295,7 @@ absl_container_lib = static_library(
+@@ -286,21 +295,23 @@ absl_container_lib = static_library(
      absl_synchronization_lib,
      absl_time_lib,
    ],
+-)
+-
+-absl_flags_lib = static_library(
+-  'absl_flags',
+-  absl_flags_sources,
+-  include_directories: absl_include_dir,
+-  link_with: [
+-    absl_base_lib,
+-    absl_container_lib,
+-    absl_hash_lib,
+-    absl_strings_lib,
+-    absl_synchronization_lib,
+-  ],
+-  dependencies: libatomic,
+-)
 +#  install : true,
- )
- 
- absl_flags_lib = static_library(
-@@ -300,6 +310,7 @@ absl_flags_lib = static_library(
-     absl_synchronization_lib,
-   ],
-   dependencies: libatomic,
++)
++
++#absl_flags_lib = static_library(
++#  'absl_flags',
++#  absl_flags_sources,
++#  include_directories: absl_include_dir,
++#  link_with: [
++#    absl_base_lib,
++#    absl_container_lib,
++#    absl_hash_lib,
++#    absl_strings_lib,
++#    absl_synchronization_lib,
++#  ],
++#  dependencies: libatomic,
 +#  install : true,
- )
++#)
  
  absl_status_lib = static_library(
+   'absl_status',
 @@ -310,6 +321,7 @@ absl_status_lib = static_library(
      absl_base_lib,
      absl_strings_lib,
@@ -104,6 +128,35 @@ index b573fee..feca154 100644
  )
  
  # Dependencies
+@@ -392,17 +404,17 @@ absl_container_dep = declare_dependency(
+   ],
+ )
+ 
+-absl_flags_dep = declare_dependency(
+-  include_directories: absl_include_dir,
+-  link_with: absl_flags_lib,
+-  dependencies: [
+-    absl_base_dep,
+-    absl_container_dep,
+-    absl_hash_dep,
+-    absl_strings_dep,
+-    absl_synchronization_dep,
+-  ],
+-)
++#absl_flags_dep = declare_dependency(
++#  include_directories: absl_include_dir,
++#  link_with: absl_flags_lib,
++#  dependencies: [
++#    absl_base_dep,
++#    absl_container_dep,
++#    absl_hash_dep,
++#    absl_strings_dep,
++#    absl_synchronization_dep,
++#  ],
++#)
+ 
+ absl_status_dep = declare_dependency(
+   include_directories: absl_include_dir,
 @@ -412,3 +424,354 @@ absl_status_dep = declare_dependency(
      absl_strings_dep,
    ],
@@ -181,7 +234,7 @@ index b573fee..feca154 100644
 +  'absl/flags/usage_config.h',
 +  'absl/flags/usage.h',
 +)
-+install_headers(absl_flags_headers, subdir:'absl/flags/')
++#install_headers(absl_flags_headers, subdir:'absl/flags/')
 +
 +absl_flags_headers_internal = files(
 +  'absl/flags/internal/commandlineflag.h',
@@ -190,7 +243,7 @@ index b573fee..feca154 100644
 +  'absl/flags/internal/private_handle_accessor.h',
 +  'absl/flags/internal/usage.h',
 +)
-+install_headers(absl_flags_headers_internal, subdir:'absl/flags/internal/')
++#install_headers(absl_flags_headers_internal, subdir:'absl/flags/internal/')
 +
 +absl_hash_headers_internal = files(
 +  'absl/hash/internal/city.h',

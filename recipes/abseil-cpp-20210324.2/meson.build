@@ -298,20 +298,20 @@ absl_container_lib = static_library(
 #  install : true,
 )
 
-absl_flags_lib = static_library(
-  'absl_flags',
-  absl_flags_sources,
-  include_directories: absl_include_dir,
-  link_with: [
-    absl_base_lib,
-    absl_container_lib,
-    absl_hash_lib,
-    absl_strings_lib,
-    absl_synchronization_lib,
-  ],
-  dependencies: libatomic,
+#absl_flags_lib = static_library(
+#  'absl_flags',
+#  absl_flags_sources,
+#  include_directories: absl_include_dir,
+#  link_with: [
+#    absl_base_lib,
+#    absl_container_lib,
+#    absl_hash_lib,
+#    absl_strings_lib,
+#    absl_synchronization_lib,
+#  ],
+#  dependencies: libatomic,
 #  install : true,
-)
+#)
 
 absl_status_lib = static_library(
   'absl_status',
@@ -404,17 +404,17 @@ absl_container_dep = declare_dependency(
   ],
 )
 
-absl_flags_dep = declare_dependency(
-  include_directories: absl_include_dir,
-  link_with: absl_flags_lib,
-  dependencies: [
-    absl_base_dep,
-    absl_container_dep,
-    absl_hash_dep,
-    absl_strings_dep,
-    absl_synchronization_dep,
-  ],
-)
+#absl_flags_dep = declare_dependency(
+#  include_directories: absl_include_dir,
+#  link_with: absl_flags_lib,
+#  dependencies: [
+#    absl_base_dep,
+#    absl_container_dep,
+#    absl_hash_dep,
+#    absl_strings_dep,
+#    absl_synchronization_dep,
+#  ],
+#)
 
 absl_status_dep = declare_dependency(
   include_directories: absl_include_dir,
@@ -497,7 +497,7 @@ absl_flags_headers = files(
   'absl/flags/usage_config.h',
   'absl/flags/usage.h',
 )
-install_headers(absl_flags_headers, subdir:'absl/flags/')
+#install_headers(absl_flags_headers, subdir:'absl/flags/')
 
 absl_flags_headers_internal = files(
   'absl/flags/internal/commandlineflag.h',
@@ -506,7 +506,7 @@ absl_flags_headers_internal = files(
   'absl/flags/internal/private_handle_accessor.h',
   'absl/flags/internal/usage.h',
 )
-install_headers(absl_flags_headers_internal, subdir:'absl/flags/internal/')
+#install_headers(absl_flags_headers_internal, subdir:'absl/flags/internal/')
 
 absl_hash_headers_internal = files(
   'absl/hash/internal/city.h',
@@ -707,11 +707,11 @@ pkg.generate(absl_hash_lib,
   version :  meson.project_version(),
 )
 
-pkg.generate(absl_numeric_lib,
-  name : 'libabsl_numeric',
-  description : 'Abseil Common Libraries (C++)',
-  version :  meson.project_version(),
-)
+#pkg.generate(absl_numeric_lib,
+#  name : 'libabsl_numeric',
+#  description : 'Abseil Common Libraries (C++)',
+#  version :  meson.project_version(),
+#)
 
 pkg.generate(absl_strings_lib,
   name : 'libabsl_strings',
@@ -719,17 +719,17 @@ pkg.generate(absl_strings_lib,
   version :  meson.project_version(),
 )
 
-pkg.generate(absl_debugging_lib,
-  name : 'libabsl_debugging',
-  description : 'Abseil Common Libraries (C++)',
-  version :  meson.project_version(),
-)
+#pkg.generate(absl_debugging_lib,
+#  name : 'libabsl_debugging',
+#  description : 'Abseil Common Libraries (C++)',
+#  version :  meson.project_version(),
+#)
 
-pkg.generate(absl_random_lib,
-  name : 'libabsl_random',
-  description : 'Abseil Common Libraries (C++)',
-  version :  meson.project_version(),
-)
+#pkg.generate(absl_random_lib,
+#  name : 'libabsl_random',
+#  description : 'Abseil Common Libraries (C++)',
+#  version :  meson.project_version(),
+#)
 
 pkg.generate(absl_time_lib,
   name : 'libabsl_time',
@@ -749,23 +749,23 @@ pkg.generate(absl_synchronization_lib,
   version :  meson.project_version(),
 )
 
-pkg.generate(absl_container_lib,
-  name : 'libabsl_container',
-  description : 'Abseil Common Libraries (C++)',
-  version :  meson.project_version(),
-)
+#pkg.generate(absl_container_lib,
+#  name : 'libabsl_container',
+#  description : 'Abseil Common Libraries (C++)',
+#  version :  meson.project_version(),
+#)
 
-pkg.generate(absl_flags_lib,
-  name : 'libabsl_flags',
-  description : 'Abseil Common Libraries (C++)',
-  version :  meson.project_version(),
-)
+#pkg.generate(absl_flags_lib,
+#  name : 'libabsl_flags',
+#  description : 'Abseil Common Libraries (C++)',
+#  version :  meson.project_version(),
+#)
 
-pkg.generate(absl_status_lib,
-  name : 'libabsl_status',
-  description : 'Abseil Common Libraries (C++)',
-  version :  meson.project_version(),
-)
+#pkg.generate(absl_status_lib,
+#  name : 'libabsl_status',
+#  description : 'Abseil Common Libraries (C++)',
+#  version :  meson.project_version(),
+#)
 
 ##########################################################
 #   comment
