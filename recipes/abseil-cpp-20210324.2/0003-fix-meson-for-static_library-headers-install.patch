@@ -1,14 +1,14 @@
-From 6d857cef44f0a2fa3f9ad98a55f6c4ff703b43ee Mon Sep 17 00:00:00 2001
+From 654995547d3402fa52932a3c0f8dcfb30deaf0fb Mon Sep 17 00:00:00 2001
 From: zhoubo <zhoubo@iauto.com>
-Date: Thu, 24 Nov 2022 20:30:04 +0800
-Subject: [PATCH 3/3] fix meson for lib&so install
+Date: Fri, 25 Nov 2022 10:33:41 +0800
+Subject: [PATCH 3/3] fix meson for static_library & headers install
 
 ---
- meson.build | 331 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 331 insertions(+)
+ meson.build | 363 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 363 insertions(+)
 
 diff --git a/meson.build b/meson.build
-index b573fee..5879ccf 100644
+index b573fee..feca154 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -199,18 +199,21 @@ absl_base_lib = static_library(
@@ -29,7 +29,7 @@ index b573fee..5879ccf 100644
    'absl_numeric',
    absl_numeric_sources,
    include_directories: absl_include_dir,
-+  install : true,
++#  install : true,
  )
  
  absl_strings_lib = static_library(
@@ -45,7 +45,7 @@ index b573fee..5879ccf 100644
      absl_strings_lib,
    ],
    dependencies: libatomic,
-+  install : true,
++#  install : true,
  )
  
  absl_random_lib = static_library(
@@ -53,7 +53,7 @@ index b573fee..5879ccf 100644
      absl_strings_lib,
    ],
    dependencies: libatomic,
-+  install : true,
++#  install : true,
  )
  
  absl_time_lib = static_library(
@@ -84,7 +84,7 @@ index b573fee..5879ccf 100644
      absl_synchronization_lib,
      absl_time_lib,
    ],
-+  install : true,
++#  install : true,
  )
  
  absl_flags_lib = static_library(
@@ -92,7 +92,7 @@ index b573fee..5879ccf 100644
      absl_synchronization_lib,
    ],
    dependencies: libatomic,
-+  install : true,
++#  install : true,
  )
  
  absl_status_lib = static_library(
@@ -100,11 +100,11 @@ index b573fee..5879ccf 100644
      absl_base_lib,
      absl_strings_lib,
    ],
-+  install : true,
++#  install : true,
  )
  
  # Dependencies
-@@ -412,3 +424,322 @@ absl_status_dep = declare_dependency(
+@@ -412,3 +424,354 @@ absl_status_dep = declare_dependency(
      absl_strings_dep,
    ],
  )
@@ -115,6 +115,14 @@ index b573fee..5879ccf 100644
 +
 +absl_base_headers = files(
 +  'absl/base/log_severity.h',
++  'absl/base/attributes.h',
++  'absl/base/config.h',
++  'absl/base/const_init.h',
++  'absl/base/macros.h',
++  'absl/base/optimization.h',
++  'absl/base/options.h',
++  'absl/base/policy_checks.h',
++  'absl/base/port.h',
 +)
 +install_headers(absl_base_headers, subdir:'absl/base/')
 +
@@ -132,6 +140,9 @@ index b573fee..5879ccf 100644
 +  'absl/base/internal/thread_identity.h',
 +  'absl/base/internal/throw_delegate.h',
 +  'absl/base/internal/unscaledcycleclock.h',
++  'absl/base/internal/identity.h',
++  'absl/base/internal/inline_variable.h',
++  'absl/base/internal/invoke.h',
 +)
 +install_headers(absl_base_headers_internal, subdir:'absl/base/internal/')
 +
@@ -308,44 +319,65 @@ index b573fee..5879ccf 100644
 +  'absl/types/bad_any_cast.h',
 +  'absl/types/bad_optional_access.h',
 +  'absl/types/bad_variant_access.h',
++  'absl/types/optional.h',
 +)
 +install_headers(absl_types_headers, subdir:'absl/types/')
++
++absl_types_headers_internal = files(
++  'absl/types/internal/optional.h',
++)
++install_headers(absl_types_headers_internal, subdir:'absl/types/internal/')
++
++absl_memory_headers = files(
++  'absl/memory/memory.h',
++)
++install_headers(absl_memory_headers, subdir:'absl/memory/')
++
++absl_meta_headers = files(
++  'absl/meta/type_traits.h',
++)
++install_headers(absl_meta_headers, subdir:'absl/meta/')
++
++absl_utility_headers = files(
++  'absl/utility/utility.h',
++)
++install_headers(absl_utility_headers, subdir:'absl/utility/')
 +
 +##########################################################
 +#   To build 1 single absl shared_library
 +##########################################################
 +
-+absl_sources = [absl_base_sources,
-+    absl_hash_sources,
-+    absl_numeric_sources,
-+    absl_strings_sources,
-+    absl_debugging_sources,
-+    absl_random_sources,
-+    absl_time_sources,
-+    absl_types_sources,
-+    absl_synchronization_sources,
-+    absl_container_sources,
-+    absl_flags_sources,
-+    absl_status_sources]
++#absl_sources = [absl_base_sources,
++#    absl_hash_sources,
++#    absl_numeric_sources,
++#    absl_strings_sources,
++#    absl_debugging_sources,
++#    absl_random_sources,
++#    absl_time_sources,
++#    absl_types_sources,
++#    absl_synchronization_sources,
++#    absl_container_sources,
++#    absl_flags_sources,
++#    absl_status_sources]
 +
-+absl_lib = shared_library('absl',
-+  absl_sources,
-+  include_directories : absl_include_dir,
-+  c_args : cpp_flags,
-+  link_args : ['-pthread'],
-+  install : true,
++#absl_lib = shared_library('absl',
++#  absl_sources,
++#  include_directories : absl_include_dir,
++#  c_args : cpp_flags,
++#  link_args : ['-pthread'],
++#  install : true,
 +#  version : meson.project_version(),
-+)
++#)
 +
 +##########################################################
 +#   install *.pc
 +##########################################################
 +pkg = import('pkgconfig')
-+pkg.generate(absl_lib,
-+  name : 'libabsl',
-+  description : 'Abseil Common Libraries (C++)',
-+  version :  meson.project_version(),
-+)
++#pkg.generate(absl_lib,
++#  name : 'libabsl',
++#  description : 'Abseil Common Libraries (C++)',
++#  version :  meson.project_version(),
++#)
 +
 +pkg.generate(absl_base_lib,
 +  name : 'libabsl_base',
@@ -359,11 +391,11 @@ index b573fee..5879ccf 100644
 +  version :  meson.project_version(),
 +)
 +
-+pkg.generate(absl_numeric_lib,
-+  name : 'libabsl_numeric',
-+  description : 'Abseil Common Libraries (C++)',
-+  version :  meson.project_version(),
-+)
++#pkg.generate(absl_numeric_lib,
++#  name : 'libabsl_numeric',
++#  description : 'Abseil Common Libraries (C++)',
++#  version :  meson.project_version(),
++#)
 +
 +pkg.generate(absl_strings_lib,
 +  name : 'libabsl_strings',
@@ -371,17 +403,17 @@ index b573fee..5879ccf 100644
 +  version :  meson.project_version(),
 +)
 +
-+pkg.generate(absl_debugging_lib,
-+  name : 'libabsl_debugging',
-+  description : 'Abseil Common Libraries (C++)',
-+  version :  meson.project_version(),
-+)
++#pkg.generate(absl_debugging_lib,
++#  name : 'libabsl_debugging',
++#  description : 'Abseil Common Libraries (C++)',
++#  version :  meson.project_version(),
++#)
 +
-+pkg.generate(absl_random_lib,
-+  name : 'libabsl_random',
-+  description : 'Abseil Common Libraries (C++)',
-+  version :  meson.project_version(),
-+)
++#pkg.generate(absl_random_lib,
++#  name : 'libabsl_random',
++#  description : 'Abseil Common Libraries (C++)',
++#  version :  meson.project_version(),
++#)
 +
 +pkg.generate(absl_time_lib,
 +  name : 'libabsl_time',
@@ -401,23 +433,23 @@ index b573fee..5879ccf 100644
 +  version :  meson.project_version(),
 +)
 +
-+pkg.generate(absl_container_lib,
-+  name : 'libabsl_container',
-+  description : 'Abseil Common Libraries (C++)',
-+  version :  meson.project_version(),
-+)
++#pkg.generate(absl_container_lib,
++#  name : 'libabsl_container',
++#  description : 'Abseil Common Libraries (C++)',
++#  version :  meson.project_version(),
++#)
 +
-+pkg.generate(absl_flags_lib,
-+  name : 'libabsl_flags',
-+  description : 'Abseil Common Libraries (C++)',
-+  version :  meson.project_version(),
-+)
++#pkg.generate(absl_flags_lib,
++#  name : 'libabsl_flags',
++#  description : 'Abseil Common Libraries (C++)',
++#  version :  meson.project_version(),
++#)
 +
-+pkg.generate(absl_status_lib,
-+  name : 'libabsl_status',
-+  description : 'Abseil Common Libraries (C++)',
-+  version :  meson.project_version(),
-+)
++#pkg.generate(absl_status_lib,
++#  name : 'libabsl_status',
++#  description : 'Abseil Common Libraries (C++)',
++#  version :  meson.project_version(),
++#)
 +
 +##########################################################
 +#   comment

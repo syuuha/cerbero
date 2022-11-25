@@ -23,7 +23,7 @@ class Recipe(recipe.Recipe):
     patches = [
         'abseil-cpp-20210324.2/0001-add-LICENSE.build-of-abseil-cpp_20210324.2-3_patch.patch',
         'abseil-cpp-20210324.2/0002-add-meson.build-of-abseil-cpp_20210324.2-3_patch.patch',
-        'abseil-cpp-20210324.2/0003-fix-meson-for-lib-so-install.patch',
+        'abseil-cpp-20210324.2/0003-fix-meson-for-static_library-headers-install.patch',
     ]
 
     #files_libs = ['libabsl']
