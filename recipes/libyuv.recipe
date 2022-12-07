@@ -1,0 +1,24 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+
+class Recipe(recipe.Recipe):
+
+    name = 'libyuv'
+    version = 'master'
+    licenses =  [{License.BSD: ['LICENSE']}]
+    btype = BuildType.CMAKE
+    stype = SourceType.GIT
+    #remotes = {'origin': 'https://github.com/lemenkov/libyuv.git'}  #unofficial libyuv mirror
+    remotes = {'origin': 'https://chromium.googlesource.com/libyuv/libyuv'}
+    commit = 'origin/main'
+
+    def prepare(self):
+        if self.config.target_platform in [Platform.ANDROID]:
+            if self.config.target_arch == Architecture.ARM64:
+                self.append_env('LDFLAGS', '-lc++_shared')
+            elif self.config.target_arch == Architecture.ARMv7:
+                self.append_env('LDFLAGS', '-lc++_shared')
+            elif self.config.target_arch == Architecture.X86:
+                self.append_env('LDFLAGS', '-lc++_shared')
+            elif self.config.target_arch == Architecture.X86_64:
+                self.append_env('LDFLAGS', '-lc++_shared')
+
