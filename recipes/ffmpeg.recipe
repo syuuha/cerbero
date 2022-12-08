@@ -31,15 +31,14 @@ class Recipe(recipe.Recipe):
         --pkg-config=%(prefix)s/../../build-tools/bin/pkg-config \
         --enable-libopenh264 \
         --enable-libfdk-aac '
- #       --enable-libx264 --enable-gpl --enable-libfdk-aac --enable-nonfree \  #for x264 need GPL, then fdk-aac need to use nonfree
+#       --enable-libx264 --enable-gpl --enable-libfdk-aac --enable-nonfree \  #for x264 need GPL, then fdk-aac need to use nonfree
 
 #        --disable-avdevice --disable-postproc --disable-swscale \
 
     deps = ['bzip2', 'zlib', 'fdk-aac', 'openh264']
 
     files_libs = ['libavcodec', 'libavformat', 'libavutil', 'libswresample', 'libavfilter', 'libavdevice', 'libswscale']  # 'libpostproc' need GPL
-   # files_devel = []
-   # files_devel = ['include/fdk-aac', 'lib/pkgconfig/openh264.pc']
+    files_devel = []
 
     def prepare(self):
         # Populate self.files_devel
