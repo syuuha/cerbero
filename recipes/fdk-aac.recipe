@@ -1,0 +1,39 @@
+# -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
+
+class Recipe(recipe.Recipe):
+
+    name = 'fdk-aac'
+#@@ fdk-aac license, need to add License.fdk-aac in /cerbero/enums.py
+    licenses =  [{License.Misc: ['NOTICE']}]
+############## 2.0.0  ##############
+    version = '2.0.0'
+    autoreconf = True
+    stype = SourceType.TARBALL
+    url = 'https://github.com/mstorsjo/fdk-aac/archive/refs/tags/v2.0.0.tar.gz'
+    tarball_checksum = '6e6c7921713788e31df655911e1d42620b057180b00bf16874f5d630e1d5b9a2'
+
+#@@ /libSBRdec/src/lpp_tran.cpp use log/log.h in Android SDK, need to patch
+############## 2.0.2  ##############
+#    version = '2.0.2'
+#    btype = BuildType.CMAKE
+#    stype = SourceType.TARBALL
+#    url = 'https://github.com/mstorsjo/fdk-aac/archive/refs/tags/v2.0.2.tar.gz'
+#    tarball_checksum = '7812b4f0cf66acda0d0fe4302545339517e702af7674dd04e5fe22a5ade16a90'
+############## master ##############
+#    version = 'master'
+#    btype = BuildType.CMAKE
+#    stype = SourceType.GIT
+#    remotes = {'origin': 'https://github.com/mstorsjo/fdk-aac.git'}
+#    commit = 'origin/master'
+
+    def prepare(self):
+        if self.config.target_platform in [Platform.ANDROID]:
+            if self.config.target_arch == Architecture.ARM64:
+                self.append_env('LDFLAGS', '-lc++_shared')
+            elif self.config.target_arch == Architecture.ARMv7:
+                self.append_env('LDFLAGS', '-lc++_shared')
+            elif self.config.target_arch == Architecture.X86:
+                self.append_env('LDFLAGS', '-lc++_shared')
+            elif self.config.target_arch == Architecture.X86_64:
+                self.append_env('LDFLAGS', '-lc++_shared')
+
