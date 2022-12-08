@@ -17,7 +17,6 @@ class Recipe(recipe.Recipe):
         --ar="$AR" --as="$AS" --cc="$CC" --ld="$CC" --nm="$NM" --ranlib="$RANLIB" \
         --strip="$STRIP" --windres="$RC" \
         --enable-static --enable-pic --enable-shared \
-        --disable-avdevice --disable-postproc --disable-swscale \
         --disable-programs --disable-ffplay --disable-ffprobe --disable-ffmpeg \
         --disable-encoder=flac --disable-protocols --disable-devices \
         --disable-network --disable-hwaccels --disable-dxva2 --disable-vdpau \
@@ -27,12 +26,20 @@ class Recipe(recipe.Recipe):
         --disable-omx-rpi --disable-cuda --disable-cuvid --disable-libmfx \
         --disable-libnpp --disable-iconv --disable-jni --disable-v4l2_m2m \
         --disable-vulkan --disable-large-tests --disable-stripping \
-        --enable-optimizations --disable-nonfree --disable-version3 %(options)s'
+        --enable-optimizations --disable-nonfree --disable-version3 %(options)s \
+        --enable-avdevice --enable-swscale \
+        --pkg-config=%(prefix)s/../../build-tools/bin/pkg-config \
+        --enable-libopenh264 \
+        --enable-libfdk-aac '
+ #       --enable-libx264 --enable-gpl --enable-libfdk-aac --enable-nonfree \  #for x264 need GPL, then fdk-aac need to use nonfree
 
-    deps = ['bzip2', 'zlib']
+#        --disable-avdevice --disable-postproc --disable-swscale \
 
-    files_libs = ['libavcodec', 'libavformat', 'libavutil', 'libswresample', 'libavfilter']
-    files_devel = []
+    deps = ['bzip2', 'zlib', 'fdk-aac', 'openh264']
+
+    files_libs = ['libavcodec', 'libavformat', 'libavutil', 'libswresample', 'libavfilter', 'libavdevice', 'libswscale']  # 'libpostproc' need GPL
+   # files_devel = []
+   # files_devel = ['include/fdk-aac', 'lib/pkgconfig/openh264.pc']
 
     def prepare(self):
         # Populate self.files_devel
@@ -135,11 +142,20 @@ class Recipe(recipe.Recipe):
                        deps=['avutil']).save()
         LibtoolLibrary('avcodec', None, None, None,
                        self.config.libdir, self.config.target_platform,
-                       deps=['swresample', 'avutil', 'z']).save()
+                       deps=['swresample', 'avutil', 'z', 'fdk-aac', 'openh264']).save()
         LibtoolLibrary('avformat', None, None, None,
                        self.config.libdir, self.config.target_platform,
-                       deps=['avcodec', 'swresample', 'avutil', 'bz2', 'z']).save()
+                       deps=['avcodec', 'avutil', 'bz2', 'z']).save()
         LibtoolLibrary('avfilter', None, None, None,
                        self.config.libdir, self.config.target_platform,
-                       deps=['avformat', 'avcodec', 'swresample', 'avutil']).save()
+                       deps=['avutil']).save()
+        LibtoolLibrary('avdevice', None, None, None,
+                       self.config.libdir, self.config.target_platform,
+                       deps=['avformat', 'avutil']).save()
+        LibtoolLibrary('swscale', None, None, None,
+                       self.config.libdir, self.config.target_platform,
+                       deps=['avutil']).save()
+#        LibtoolLibrary('postproc', None, None, None,
+#                       self.config.libdir, self.config.target_platform,
+#                       deps=['avutil']).save()
         super().post_install()
