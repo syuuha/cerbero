@@ -4,6 +4,9 @@ class Recipe(recipe.Recipe):
 
     name = 'fdk-aac'
 #@@ fdk-aac license, need to add License.fdk-aac in /cerbero/enums.py
+# https://ffmpeg.org/general.html
+# The license of the Fraunhofer AAC library is incompatible with the GPL. Therefore, for GPL builds, you have to pass --enable-nonfree to configure in order to use it. 
+# To the best of our knowledge, it is compatible with the LGPL.
     licenses =  [{License.Misc: ['NOTICE']}]
 ############## 2.0.0  ##############
     version = '2.0.0'
@@ -25,15 +28,4 @@ class Recipe(recipe.Recipe):
 #    stype = SourceType.GIT
 #    remotes = {'origin': 'https://github.com/mstorsjo/fdk-aac.git'}
 #    commit = 'origin/master'
-
-    def prepare(self):
-        if self.config.target_platform in [Platform.ANDROID]:
-            if self.config.target_arch == Architecture.ARM64:
-                self.append_env('LDFLAGS', '-lc++_shared')
-            elif self.config.target_arch == Architecture.ARMv7:
-                self.append_env('LDFLAGS', '-lc++_shared')
-            elif self.config.target_arch == Architecture.X86:
-                self.append_env('LDFLAGS', '-lc++_shared')
-            elif self.config.target_arch == Architecture.X86_64:
-                self.append_env('LDFLAGS', '-lc++_shared')
 
