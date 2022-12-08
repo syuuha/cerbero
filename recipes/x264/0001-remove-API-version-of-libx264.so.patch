@@ -1,0 +1,44 @@
+From 02df2d4a8f4f4f3687249b116b1c6bbe92fb6188 Mon Sep 17 00:00:00 2001
+From: zhoubo <zhoubo@iauto.com>
+Date: Thu, 8 Dec 2022 18:26:55 +0800
+Subject: [PATCH] remove API version of libx264.so
+
+---
+ configure | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/configure b/configure
+index 3cf63e0..97fea86 100755
+--- a/configure
++++ b/configure
+@@ -1487,7 +1487,7 @@ fi
+ if [ "$shared" = "yes" ]; then
+     API=$(grep '#define X264_BUILD' < ${SRCPATH}/x264.h | cut -f 3 -d ' ')
+     if [ "$SYS" = "WINDOWS" -o "$SYS" = "CYGWIN" ]; then
+-        echo "SONAME=libx264-$API.dll" >> config.mak
++        echo "SONAME=libx264.dll" >> config.mak
+         if [ $compiler_style = MS ]; then
+             echo 'IMPLIBNAME=libx264.dll.lib' >> config.mak
+             # GNU ld on windows defaults to exporting all global functions if there are no explicit __declspec(dllexport) declarations
+@@ -1504,15 +1504,15 @@ if [ "$shared" = "yes" ]; then
+         fi
+     elif [ "$SYS" = "MACOSX" ]; then
+         echo "SOSUFFIX=dylib" >> config.mak
+-        echo "SONAME=libx264.$API.dylib" >> config.mak
++        echo "SONAME=libx264.dylib" >> config.mak
+         echo "SOFLAGS=-shared -dynamiclib -Wl,-single_module -Wl,-read_only_relocs,suppress -install_name \$(DESTDIR)\$(libdir)/\$(SONAME) $SOFLAGS" >> config.mak
+     elif [ "$SYS" = "SunOS" ]; then
+         echo "SOSUFFIX=so" >> config.mak
+-        echo "SONAME=libx264.so.$API" >> config.mak
++        echo "SONAME=libx264.so" >> config.mak
+         echo "SOFLAGS=-shared -Wl,-h,\$(SONAME) $SOFLAGS" >> config.mak
+     else
+         echo "SOSUFFIX=so" >> config.mak
+-        echo "SONAME=libx264.so.$API" >> config.mak
++        echo "SONAME=libx264.so" >> config.mak
+         echo "SOFLAGS=-shared -Wl,-soname,\$(SONAME) $SOFLAGS" >> config.mak
+     fi
+     echo 'default: lib-shared' >> config.mak
+-- 
+2.7.4
+
